@@ -1,6 +1,10 @@
 ---
 title: API Reference
 
+language_tabs: # must be one of https://git.io/vQNgJ
+  - shell
+  - javascript
+
 toc_footers:
   - <a href='https://api.blockchain.info/customer/signup'>Request an API key</a>
   - <a href='https://blockchain.com/wallet'>Get a free wallet</a>
