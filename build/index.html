@@ -364,25 +364,40 @@
               </ul>
           </li>
           <li>
-            <a href="#websockets" class="toc-h1 toc-link" data-title="Websockets">Websockets</a>
+            <a href="#websocket-api" class="toc-h1 toc-link" data-title="Websocket API">Websocket API</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#connection-url" class="toc-h2 toc-link" data-title="Connection URL">Connection URL</a>
+                    <a href="#connection-and-authentication" class="toc-h2 toc-link" data-title="Connection and authentication">Connection and authentication</a>
                   </li>
                   <li>
-                    <a href="#ping" class="toc-h2 toc-link" data-title="Ping">Ping</a>
+                    <a href="#messages" class="toc-h2 toc-link" data-title="Messages">Messages</a>
                   </li>
                   <li>
-                    <a href="#subscribing-to-unconfirmed-transactions" class="toc-h2 toc-link" data-title="Subscribing to Unconfirmed transactions">Subscribing to Unconfirmed transactions</a>
+                    <a href="#heartbeats" class="toc-h2 toc-link" data-title="Heartbeats">Heartbeats</a>
                   </li>
                   <li>
-                    <a href="#subscribing-to-an-address" class="toc-h2 toc-link" data-title="Subscribing to an Address">Subscribing to an Address</a>
+                    <a href="#disconnection" class="toc-h2 toc-link" data-title="Disconnection">Disconnection</a>
                   </li>
                   <li>
-                    <a href="#subscribing-to-new-blocks" class="toc-h2 toc-link" data-title="Subscribing to new Blocks">Subscribing to new Blocks</a>
+                    <a href="#actions" class="toc-h2 toc-link" data-title="Actions">Actions</a>
                   </li>
                   <li>
-                    <a href="#debugging-ops" class="toc-h2 toc-link" data-title="Debugging OPs">Debugging OPs</a>
+                    <a href="#data-types" class="toc-h2 toc-link" data-title="Data types">Data types</a>
+                  </li>
+                  <li>
+                    <a href="#market-data" class="toc-h2 toc-link" data-title="Market Data">Market Data</a>
+                  </li>
+                  <li>
+                    <a href="#venue-information" class="toc-h2 toc-link" data-title="Venue information">Venue information</a>
+                  </li>
+                  <li>
+                    <a href="#orders" class="toc-h2 toc-link" data-title="Orders">Orders</a>
+                  </li>
+                  <li>
+                    <a href="#portfolio" class="toc-h2 toc-link" data-title="Portfolio">Portfolio</a>
+                  </li>
+                  <li>
+                    <a href="#miscellaneous" class="toc-h2 toc-link" data-title="Miscellaneous">Miscellaneous</a>
                   </li>
               </ul>
           </li>
@@ -2028,171 +2043,785 @@ This is extremely important if you are processing valuable transactions.
 <td>Lookup the reason why the provided tx or block hash was rejected (if any)</td>
 </tr>
 </tbody></table>
-<h1 id='websockets'>Websockets</h1>
-<p>Low latency streaming socket channel providing data on new blocks and transactions. Subscribe to notification on blocks, transactions or an address and receive JSON objects describing a transaction or block when an event occurs.</p>
+<h1 id='websocket-api'>Websocket API</h1>
+<p>The Websocket API is used to stream market data, user data and to interact with the trading system in real time.
+The messages are serialized using JSON.</p>
+<h2 id='connection-and-authentication'>Connection and authentication</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"auth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"your-jwt-token"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The WS endpoint are, depending on the environment:</p>
 
-<p>Our WebSocket API allows developers to receive Real-Time notifications about new transactions and blocks. The <a href="http://websocket.org/echo.html">Websocket echo test</a> can be useful for debugging.</p>
-<h3 id='connection-url'>Connection URL</h3>
-<p><code>wss://ws.blockchain.info/inv</code></p>
+<table><thead>
+<tr>
+<th>Environment</th>
+<th>URI</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>local</td>
+<td><code>ws://localhost:8080/trading/v1</code></td>
+</tr>
+<tr>
+<td>dev</td>
+<td><code>wss://ws.dev.blockchain.info/trading/v1</code></td>
+</tr>
+<tr>
+<td>staging</td>
+<td><code>wss://ws.staging.blockchain.info/trading/v1</code></td>
+</tr>
+<tr>
+<td>prod</td>
+<td><code>wss://ws.blockchain.info/trading/v1</code></td>
+</tr>
+</tbody></table>
 
-<p>Once the socket is open you can subscribe to a channel by sending an <code>op</code> message.</p>
-<h2 id='ping'>Ping</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="s2">"op"</span><span class="p">:</span><span class="s2">"ping"</span><span class="p">}</span><span class="w">
+<p>To authenticate with the websocket server, you must send the following message in the 5 seconds following your connection:</p>
+
+<p>If the message is not sent after 5 sec, or is invalid, you’ll be disconnected automatically.</p>
+<h2 id='messages'>Messages</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"auth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"connected"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre>
 <blockquote>
-<p>Response:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="s2">"op"</span><span class="p">:</span><span class="s2">"pong"</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>Sends a ping</p>
-
-<p><code>{&quot;op&quot;:&quot;ping&quot;}</code></p>
-<h2 id='subscribing-to-unconfirmed-transactions'>Subscribing to Unconfirmed transactions</h2>
-<blockquote>
-<p>Sample data:</p>
+<p>Server response:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"op"</span><span class="p">:</span><span class="w"> </span><span class="s2">"utx"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"x"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"lock_time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"ver"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"size"</span><span class="p">:</span><span class="w"> </span><span class="mi">192</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">4294967295</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"prev_out"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-          </span><span class="s2">"spent"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"tx_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">351807674</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"addr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"155HfFSwaymuHyNKba9pZjVqnktSMqrsSc"</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">3183560</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"n"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-          </span><span class="s2">"script"</span><span class="p">:</span><span class="w"> </span><span class="s2">"76a9142cb012d7c7e4f11c4884aba7d941df98ba7a258e88ac"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="s2">"script"</span><span class="p">:</span><span class="w"> </span><span class="s2">"483045022100d26389e49f47da734e991b71f8489f1c078a6eb0e3d45a95007e41fc2559b67d02205dda5c11f2db0d3ea9d0cb1942b764f914cb5e148a487827cc50a12cd59cdd720121020e0468d0bbe3ee050421c316942cba577de591075897eb29a81a996f5b261ef7"</span><span class="w">
-      </span><span class="p">}</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="s2">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1527870941</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"tx_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">351808457</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"vin_sz"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"689b0a16ab38b4639bd447093d851c60304dd4807330744759f88e7e6f11eba7"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"vout_sz"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"relayed_by"</span><span class="p">:</span><span class="w"> </span><span class="s2">"127.0.0.1"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"out"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-      </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"spent"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"tx_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">351808457</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"addr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"14SwXzwDfoQEvghasqq1nvk19fpEtXpVD5"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">3182430</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"n"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"script"</span><span class="p">:</span><span class="w"> </span><span class="s2">"76a91425d04caa4cb29f56bead48d8d5678201c3bd2aad88ac"</span><span class="w">
-      </span><span class="p">}</span><span class="w">
-    </span><span class="p">]</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid instrument key"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Messages have a <code>seqnum</code> attached to them, which starts at 0 and increases by 1 for each message sent by the server. If you receive an out-of-order message, the recommended action is to disconnect and reconnect.</p>
+
+<p>All messages sent back by the server have a <code>channel</code> attribute, if the <code>channel</code> is <code>error</code>, another field named <code>message</code> describes the error. The <code>source</code> field describe which channel the error is from (if from a channel):</p>
+<h2 id='heartbeats'>Heartbeats</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"heartbeat"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Once connected, you will receive regular heartbeats:</p>
+<h2 id='disconnection'>Disconnection</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"auth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"connected"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>If you get disconnected by the server (invalid auth, token timeout, etc..), you’ll receive this message:</p>
+<h2 id='actions'>Actions</h2>
+<p>Messages you send to the websocket server have an <code>action</code> attribute, the most common actions are <code>subscribe</code> and <code>unsubscribe</code>.</p>
+<h3 id='subscribe'>Subscribe</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;channel_name&gt;"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The <code>subscribe</code> action is used to subscribe to a channel:</p>
+
+<p>Some channels necessitate extra arguments like instrument keys, etc..</p>
+<h3 id='unsubscribe'>Unsubscribe</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;channel_name&gt;"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The <code>unsubscribe</code> action is used to unsubscribe from a channel:</p>
+<h2 id='data-types'>Data types</h2>
+<p>Dates and timestamps are returned as ISO 8601 strings in the UTC timezone (2018-03-02T04:56:59Z)</p>
+<h2 id='market-data'>Market Data</h2><h3 id='tickers'>Tickers</h3>
+<blockquote>
+<p>Subscribe to Ticker:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Ticker Updates:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"bid"</span><span class="p">:</span><span class="w"> </span><span class="mf">10000.01</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ask"</span><span class="p">:</span><span class="w"> </span><span class="mf">10000.02</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-03-02T11:49:05Z"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Ticker:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to tickers for instruments using the following message:</p>
+
+<p>You will then get updates about ticker for this instrument:</p>
+
+<p>To unsubscribe:</p>
+<h3 id='top-of-book'>Top of Book</h3>
+<blockquote>
+<p>Subscribe to Top of Book</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"topofbook"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FUNDED"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Top of Book Ticker Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"topofbook"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FUNDED"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"bid"</span><span class="p">:</span><span class="w"> </span><span class="mf">10000.01</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"bidSize"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.53454</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ask"</span><span class="p">:</span><span class="w"> </span><span class="mf">10000.02</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"askSize"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.59306</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubcribe from Top of Book</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"topofbook"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FUNDED"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to the top of book for instruments, specifying the depth type, using the following message:</p>
+
+<p>You will then get updates about ticker for this instrument:</p>
+
+<p>To unsubscribe:</p>
+<h3 id='market-trades'>Market Trades</h3>
+<blockquote>
+<p>Subscribe to Market Trades</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"markettrades"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Market Trades Ticker updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"markettrades"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-03-15T08:43:32.456Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">7854.34</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5396</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MARKET"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BUY"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Market Trades</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"markettrades"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to market trades for instruments using the following message:</p>
+
+<p>You will then get updates about market trades for this instrument:
+To unsubscribe:</p>
+<h3 id='large-trades'>Large Trades</h3>
+<blockquote>
+<p>Subscribe to Larger Trades</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"whales"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"selector"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"baseQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Larger Trades Ticker Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"whales"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-03-15T08:43:32.456Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">7854.34</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.5396</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MARKET"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BUY"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Larger Trades</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"whales"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"selector"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"baseQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can filter the market trades feed for a given pair/instrument to only get information about trades larger than a given quantity:</p>
+
+<p>You will then get updates about market trades that match the selector and are above the minQty:</p>
+
+<p>To unsubscribe:</p>
+<h3 id='funded-market-depth'>Funded/Market Depth</h3>
+<blockquote>
+<p>Subscribe to Funded Depth</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"depth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FUNDED"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Subscribe to Market Depth</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"depth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MARKET"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Funded/Market Depth Ticker Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"depth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FUNDED"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"bids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.36937</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.99</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">23.689365</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"asks"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.01</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">68.4903</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.02</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">783.457395</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"depth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AGGR-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FUNDED"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"bids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.36937</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBTS"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">14.5048</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.99</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">23.689365</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBFX"</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"asks"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.01</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">68.4903</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.02</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">783.457395</span><span class="p">,</span><span class="w"> </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBTR"</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Funded/Market Depth</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"depth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FUNDED"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to funded/market depth for instruments using the following message:</p>
+
+<p>You will then get updates about the depth for this instrument:</p>
+
+<p>For an aggregated book:</p>
+
+<p>To unsubscribe:</p>
+<h3 id='quote-depth'>Quote Depth</h3>
+<blockquote>
+<p>Subscribe to Core Price</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"depth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"QUOTE"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Core Price Ticker Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"quote"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"QUOTE"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"bids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s2">"venues"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"XGDX"</span><span class="p">,</span><span class="w"> </span><span class="s2">"XBFX"</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.99</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s2">"venues"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"XBTS"</span><span class="p">,</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="s2">"asks"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.01</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s2">"venues"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"XBTS"</span><span class="p">,</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w"> </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.02</span><span class="p">,</span><span class="w"> </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s2">"venues"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"XGDX"</span><span class="p">,</span><span class="w"> </span><span class="s2">"XBFX"</span><span class="p">,</span><span class="w"> </span><span class="s2">"XBTS"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Core Price</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"depth"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"depth"</span><span class="p">:</span><span class="w"> </span><span class="s2">"QUOTE"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XBLK-BTC-USD-C"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to core price updates for instruments using the following message:
+You will then get updates about our core price for this instrument:
+To unsubscribe:</p>
+<h2 id='venue-information'>Venue information</h2><h3 id='balances'>Balances</h3>
+<blockquote>
+<p>Subscribe to Balances:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"balances"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Balance Ticker Updates:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"balances"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">134.694853</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe to Balances:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"balances"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to balances updates using the following message:</p>
+
+<p>You will then receive balance updates when the balance at a venue changes. For example, if the BTC balance of GDAX, you would receive:</p>
+
+<p>To unsubscribe:</p>
+<h3 id='total-balances'>Total Balances</h3>
+<blockquote>
+<p>Subscribe to Total Balances</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"totalBalances"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Total Balance Ticker Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"totalBalances"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"venue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"fiatTotal"</span><span class="p">:</span><span class="w"> </span><span class="mf">200000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"fiatCryptoTotal"</span><span class="p">:</span><span class="w"> </span><span class="mf">100000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"totalByCurrencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"BTC"</span><span class="p">:</span><span class="w"> </span><span class="mf">50000.0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"ETH"</span><span class="p">:</span><span class="w"> </span><span class="mf">50000.0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"USD"</span><span class="p">:</span><span class="w"> </span><span class="mf">100000.0</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>Subscribe to notifications for all new bitcoin transactions.</p>
+<p>You can subscribe to total balances updates using the following message:</p>
 
-<p><code>{&quot;op&quot;: &quot;unconfirmed_sub&quot;}</code></p>
+<p>You will then receive balance updates each 10 seconds of the total balance in USD. For example, for GDAX, you would receive:</p>
 
-<p>Unsubscribe to notifications</p>
-
-<p><code>{&quot;op&quot; : &quot;unconfirmed_unsub&quot;}</code></p>
-<h2 id='subscribing-to-an-address'>Subscribing to an Address</h2>
 <blockquote>
-<p>Sample data:</p>
+<p>Unsubscribe from Total Balances</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-    </span><span class="s2">"op"</span><span class="p">:</span><span class="w"> </span><span class="s2">"utx"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"x"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"lock_time"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"ver"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"size"</span><span class="p">:</span><span class="w"> </span><span class="mi">192</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-            </span><span class="p">{</span><span class="w">
-                </span><span class="s2">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">4294967295</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"prev_out"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-                    </span><span class="s2">"spent"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-                    </span><span class="s2">"tx_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">99005468</span><span class="p">,</span><span class="w">
-                    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-                    </span><span class="s2">"addr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1BwGf3z7n2fHk6NoVJNkV32qwyAYsMhkWf"</span><span class="p">,</span><span class="w">
-                    </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">65574000</span><span class="p">,</span><span class="w">
-                    </span><span class="s2">"n"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-                    </span><span class="s2">"script"</span><span class="p">:</span><span class="w"> </span><span class="s2">"76a91477f4c9ee75e449a74c21a4decfb50519cbc245b388ac"</span><span class="w">
-                </span><span class="p">},</span><span class="w">
-                </span><span class="s2">"script"</span><span class="p">:</span><span class="w"> </span><span class="s2">"483045022100e4ff962c292705f051c2c2fc519fa775a4d8955bce1a3e29884b2785277999ed02200b537ebd22a9f25fbbbcc9113c69c1389400703ef2017d80959ef0f1d685756c012102618e08e0c8fd4c5fe539184a30fe35a2f5fccf7ad62054cad29360d871f8187d"</span><span class="w">
-            </span><span class="p">}</span><span class="w">
-        </span><span class="p">],</span><span class="w">
-        </span><span class="s2">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1440086763</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"tx_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">99006637</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"vin_sz"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0857b9de1884eec314ecf67c040a2657b8e083e1f95e31d0b5ba3d328841fc7f"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"vout_sz"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"relayed_by"</span><span class="p">:</span><span class="w"> </span><span class="s2">"127.0.0.1"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"out"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-            </span><span class="p">{</span><span class="w">
-                </span><span class="s2">"spent"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"tx_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">99006637</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"addr"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1A828tTnkVFJfSvLCqF42ohZ51ksS3jJgX"</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="mi">65564000</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"n"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-                </span><span class="s2">"script"</span><span class="p">:</span><span class="w"> </span><span class="s2">"76a914640cfdf7b79d94d1c980133e3587bd6053f091f388ac"</span><span class="w">
-            </span><span class="p">}</span><span class="w">
-        </span><span class="p">]</span><span class="w">
-    </span><span class="p">}</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"totalBalances"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>Receive new transactions for a specific bitcoin address:</p>
-
-<p><code>{&quot;op&quot;:&quot;addr_sub&quot;, &quot;addr&quot;:&quot;$bitcoin_address&quot;}</code></p>
-
-<p>Unsubscribe</p>
-
-<p><code>{&quot;op&quot;:&quot;addr_unsub&quot;, &quot;addr&quot;:&quot;$bitcoin_address&quot;}</code></p>
-<h2 id='subscribing-to-new-blocks'>Subscribing to new Blocks</h2>
+<p>To unsubscribe:</p>
+<h2 id='orders'>Orders</h2><h3 id='order-updates'>Order Updates</h3>
 <blockquote>
-<p>Sample data:</p>
+<p>Subscribe to Orders</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-    </span><span class="s2">"op"</span><span class="p">:</span><span class="w"> </span><span class="s2">"block"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"x"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"txIndexes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-            </span><span class="mi">3187871</span><span class="p">,</span><span class="w">
-            </span><span class="mi">3187868</span><span class="w">
-        </span><span class="p">],</span><span class="w">
-        </span><span class="s2">"nTx"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"totalBTCSent"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"estimatedBTCSent"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"reward"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"blockIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">190460</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"prevBlockIndex"</span><span class="p">:</span><span class="w"> </span><span class="mi">190457</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"height"</span><span class="p">:</span><span class="w"> </span><span class="mi">170359</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"hash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"00000000000006436073c07dfa188a8fa54fefadf571fd774863cda1b884b90f"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"mrklRoot"</span><span class="p">:</span><span class="w"> </span><span class="s2">"94e51495e0e8a0c3b78dac1220b2f35ceda8799b0a20cfa68601ed28126cfcc2"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1331301261</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"bits"</span><span class="p">:</span><span class="w"> </span><span class="mi">436942092</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"nonce"</span><span class="p">:</span><span class="w"> </span><span class="mi">758889471</span><span class="w">
-    </span><span class="p">}</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>Receive notifications when a new block is found. Note: if the chain splits you will receive more than one notification for a specific block height.</p>
+<blockquote>
+<p>Order has been accepted by system</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123e4567-e89b-12d3-a456-426655440000"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"6994"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DIRECT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"parent"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BUY"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LIMIT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.01</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedPrice"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"portfolio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"state"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"coreState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"INITIAL"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pendingState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fillState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Order has been locked by a venue</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123e4567-e89b-12d3-a456-426655440000"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"6994"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DIRECT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"parent"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BUY"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LIMIT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.01</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedPrice"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"portfolio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"state"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"coreState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOCKED"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pendingState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fillState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Order has been sitting on the book</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123e4567-e89b-12d3-a456-426655440000"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"6994"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DIRECT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"parent"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BUY"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LIMIT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.01</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedPrice"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"portfolio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"state"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"coreState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"WORKING"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pendingState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fillState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Order has been partially filled</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123e4567-e89b-12d3-a456-426655440000"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"6994"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"instrument"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DIRECT"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"parent"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BUY"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LIMIT"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"executedQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.01</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"executedPrice"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.01</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"portfolio"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"state"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"coreState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"WORKING"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"pendingState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"fillState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PARTIALLY_FILLED"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Order has been completed, no more updates will be sent</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"created"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-01T00:00:00.000Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123e4567-e89b-12d3-a456-426655440000"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"6994"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DIRECT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"parent"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BUY"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LIMIT"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.01</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedPrice"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.01</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"portfolio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"state"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"coreState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FILLED"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pendingState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"fillState"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FILLED"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="s2">"attributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from orders</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"orders"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>To subscribe to order updates, send the following message:</p>
 
-<p><code>{&quot;op&quot;:&quot;blocks_sub&quot;}</code></p>
+<p>When an order changes state or receives a fill, an update is sent, execution reports are sent separately.</p>
 
-<p>Unsubscribe</p>
+<p>Here’s the example of the lifecycle of an order:</p>
 
-<p><code>{&quot;op&quot;:&quot;blocks_unsub&quot;}</code></p>
-<h2 id='debugging-ops'>Debugging OPs</h2>
-<p>Responds with the latest block:</p>
+<p>The order has been accepted by the system.</p>
 
-<p><code>{&quot;op&quot;:&quot;ping_block&quot;}</code></p>
+<p>The order has been locked by a venue.</p>
 
-<p>Responds with the latest transaction. If subscribed to any addresses it will respond with the latest transaction involving those addresses.</p>
+<p>The order is now sitting on the book.</p>
 
-<p><code>{&quot;op&quot;:&quot;ping_tx&quot;}</code></p>
+<p>The order got partially filled.</p>
+
+<p>The order has been completed, no more updates will be sent.</p>
+
+<p>To unsubscribe, send:</p>
+<h3 id='execution-reports'>Execution reports</h3>
+<blockquote>
+<p>Subscribe to Execution Reports</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reports"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Execution Report Ticker Update</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reports"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123e4567-e89b-12d3-a456-426655440000"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ref"</span><span class="p">:</span><span class="w"> </span><span class="s2">"6994"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-04-01T06:46:34"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"tradeType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DMA"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.05"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5000.01"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Execution Reports</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reports"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>To subscribe to execution reports, send the following message:</p>
+
+<p>Each time an order gets a fill, you’ll receive a notification as follows:</p>
+
+<p>To unsubscribe to execution reports, send the following message:</p>
+<h2 id='portfolio'>Portfolio</h2><h3 id='portfolio-updates'>Portfolio Updates</h3>
+<blockquote>
+<p>Subscribe to Portfolio Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfolio"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Portfolio Update Ticker Update</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfolio"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"book"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BC_MM"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"portfolio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"openingQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"executedQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">999.9</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"transactions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"instrument"</span><span class="p">:</span><span class="w"> </span><span class="s2">"XGDX-BTC-USD-C"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-03-16T13:35:45.045Z"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SELL"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">10000.0</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Portfolio Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfolio"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to portfolio updates using the following message:
+You will then receive the full portfolio when it updates:</p>
+
+<p>To unsubscribe:</p>
+<h3 id='portfolio-analytics'>Portfolio Analytics</h3>
+<blockquote>
+<p>Subscribe to Portfolio Analytics</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfolioanalytics"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Portfolio Analytic Ticker Update</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfolioanalytics"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"book"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BC_MM"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"portfolio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"referencePrice"</span><span class="p">:</span><span class="w"> </span><span class="mf">9000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"spot"</span><span class="p">:</span><span class="w"> </span><span class="mf">9100.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"openingQuantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"quantity"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"delta"</span><span class="p">:</span><span class="w"> </span><span class="mf">91000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"pnl"</span><span class="p">:</span><span class="w"> </span><span class="mf">1100.0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Portfolio Analytics</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfolioanalytics"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to portfolio analytics using the following message:</p>
+
+<p>You will then receive the last analytics updates about a portfolio:</p>
+
+<p>To unsubscribe:</p>
+<h3 id='portfolio-risk'>Portfolio Risk</h3>
+<blockquote>
+<p>Subscribe to Portfolio Risk</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfoliorisk"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Portfolio Risk Ticker Update</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfolioanalytics"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"portfolio"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_BC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"riskPosition"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"riskLongPosition"</span><span class="p">:</span><span class="w"> </span><span class="mf">7000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"riskLongPositionVwap"</span><span class="p">:</span><span class="w"> </span><span class="mf">6500.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"riskShortPosition"</span><span class="p">:</span><span class="w"> </span><span class="mf">6500.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"riskShortPositionVwap"</span><span class="p">:</span><span class="w"> </span><span class="mf">6300.0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Portfolio Risk</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"portfoliorisk"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to portfolio risk using the following message:</p>
+
+<p>You will then receive the last risk updates about a portfolio:</p>
+
+<p>To unsubscribe:</p>
+<h2 id='miscellaneous'>Miscellaneous</h2><h3 id='configuration'>Configuration</h3>
+<blockquote>
+<p>Subscribe to Configuration Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"config"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Configuration Update Ticker Update</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1337</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"config"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"configuration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"venue.aggregate.venues"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"XGDX"</span><span class="p">,</span><span class="w"> </span><span class="s2">"XBTS"</span><span class="p">],</span><span class="w">
+    </span><span class="s2">"venue.quote.tiers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span><span class="w"> </span><span class="mf">50.0</span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Unsubscribe from Configuration Updates</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unsubscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"config"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>You can subscribe to configuration updates using the following message:</p>
+
+<p>You will then receive the full public config when it updates:</p>
+
+<p>To unsubscribe:</p>
 <h1 id='market-exchange-rates'>Market Exchange Rates</h1>
 <p>Market Prices and exchanges rates api</p>
 
