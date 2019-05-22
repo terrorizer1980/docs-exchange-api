@@ -1,188 +1,886 @@
-# Websockets
+# Websocket API
 
-Low latency streaming socket channel providing data on new blocks and transactions. Subscribe to notification on blocks, transactions or an address and receive JSON objects describing a transaction or block when an event occurs.
+The Websocket API is used to stream market data, user data and to interact with the trading system in real time.
+The messages are serialized using JSON.
 
-Our WebSocket API allows developers to receive Real-Time notifications about new transactions and blocks. The [Websocket echo test](http://websocket.org/echo.html) can be useful for debugging.
-
-### Connection URL
-
-`wss://ws.blockchain.info/inv`
-
-Once the socket is open you can subscribe to a channel by sending an `op` message.
-
-## Ping
-
-```json
-{"op":"ping"}
-```
-
-> Response:
-
-```json
-{"op":"pong"}
-```
-
-Sends a ping
-
-`{"op":"ping"}`
-
-## Subscribing to Unconfirmed transactions
-
-> Sample data:
+## Connection and authentication
 
 ```json
 {
-  "op": "utx",
-  "x": {
-    "lock_time": 0,
-    "ver": 1,
-    "size": 192,
-    "inputs": [
-      {
-        "sequence": 4294967295,
-        "prev_out": {
-          "spent": true,
-          "tx_index": 351807674,
-          "type": 0,
-          "addr": "155HfFSwaymuHyNKba9pZjVqnktSMqrsSc",
-          "value": 3183560,
-          "n": 1,
-          "script": "76a9142cb012d7c7e4f11c4884aba7d941df98ba7a258e88ac"
-        },
-        "script": "483045022100d26389e49f47da734e991b71f8489f1c078a6eb0e3d45a95007e41fc2559b67d02205dda5c11f2db0d3ea9d0cb1942b764f914cb5e148a487827cc50a12cd59cdd720121020e0468d0bbe3ee050421c316942cba577de591075897eb29a81a996f5b261ef7"
-      }
-    ],
-    "time": 1527870941,
-    "tx_index": 351808457,
-    "vin_sz": 1,
-    "hash": "689b0a16ab38b4639bd447093d851c60304dd4807330744759f88e7e6f11eba7",
-    "vout_sz": 1,
-    "relayed_by": "127.0.0.1",
-    "out": [
-      {
-        "spent": false,
-        "tx_index": 351808457,
-        "type": 0,
-        "addr": "14SwXzwDfoQEvghasqq1nvk19fpEtXpVD5",
-        "value": 3182430,
-        "n": 0,
-        "script": "76a91425d04caa4cb29f56bead48d8d5678201c3bd2aad88ac"
-      }
-    ]
+  "action": "auth",
+  "token": "your-jwt-token"
+}
+```
+
+The WS endpoint are, depending on the environment:
+
+| Environment | URI                                           |
+| ----------- | --------------------------------------------- |
+| local       | `ws://localhost:8080/trading/v1`              |
+| dev         | `wss://ws.dev.blockchain.info/trading/v1`     |
+| staging     | `wss://ws.staging.blockchain.info/trading/v1` |
+| prod        | `wss://ws.blockchain.info/trading/v1`         |
+
+To authenticate with the websocket server, you must send the following message in the 5 seconds following your connection:
+
+If the message is not sent after 5 sec, or is invalid, you’ll be disconnected automatically.
+
+## Messages
+
+```json
+{
+  "channel": "auth",
+  "seqnum": 0,
+  "connected": true
+}
+```
+
+> Server response:
+
+```json
+{
+  "channel": "error",
+  "source": "ticker",
+  "message": "Invalid instrument key",
+  "seqnum": 1337
+}
+```
+
+Messages have a `seqnum` attached to them, which starts at 0 and increases by 1 for each message sent by the server. If you receive an out-of-order message, the recommended action is to disconnect and reconnect.
+
+All messages sent back by the server have a `channel` attribute, if the `channel` is `error`, another field named `message` describes the error. The `source` field describe which channel the error is from (if from a channel):
+
+## Heartbeats
+
+```json
+{
+  "channel": "heartbeat",
+  "seqnum": 1
+}
+```
+
+Once connected, you will receive regular heartbeats:
+
+## Disconnection
+
+```json
+{
+  "channel": "auth",
+  "seqnum": 1337,
+  "connected": false
+}
+```
+
+If you get disconnected by the server (invalid auth, token timeout, etc..), you’ll receive this message:
+
+## Actions
+
+Messages you send to the websocket server have an `action` attribute, the most common actions are `subscribe` and `unsubscribe`.
+
+### Subscribe
+
+```json
+{
+  "action": "subscribe",
+  "channel": "<channel_name>"
+}
+```
+
+The `subscribe` action is used to subscribe to a channel:
+
+Some channels necessitate extra arguments like instrument keys, etc..
+
+### Unsubscribe
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "<channel_name>"
+}
+```
+
+The `unsubscribe` action is used to unsubscribe from a channel:
+
+## Data types
+
+Dates and timestamps are returned as ISO 8601 strings in the UTC timezone (2018-03-02T04:56:59Z)
+
+## Market Data
+
+### Tickers
+
+> Subscribe to Ticker:
+
+```json
+{
+  "action": "subscribe",
+  "channel": "ticker",
+  "instrument": "XBLK-BTC-USD-C"
+}
+```
+
+> Ticker Updates:
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "ticker",
+  "instrument": "XBLK-BTC-USD-C",
+  "bid": 10000.01,
+  "ask": 10000.02,
+  "timestamp": "2018-03-02T11:49:05Z"
+}
+```
+
+> Unsubscribe from Ticker:
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "ticker",
+  "instrument": "XBLK-BTC-USD-C"
+}
+```
+
+You can subscribe to tickers for instruments using the following message:
+
+You will then get updates about ticker for this instrument:
+
+To unsubscribe:
+
+### Top of Book
+
+> Subscribe to Top of Book
+
+```json
+{
+  "action": "subscribe",
+  "channel": "topofbook",
+  "instrument": "XBLK-BTC-USD-C",
+  "depth": "FUNDED"
+}
+```
+
+> Top of Book Ticker Updates
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "topofbook",
+  "instrument": "XBLK-BTC-USD-C",
+  "depth": "FUNDED",
+  "bid": 10000.01,
+  "bidSize": 0.53454,
+  "ask": 10000.02,
+  "askSize": 1.59306
+}
+```
+
+> Unsubcribe from Top of Book
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "topofbook",
+  "instrument": "XBLK-BTC-USD-C",
+  "depth": "FUNDED"
+}
+```
+
+You can subscribe to the top of book for instruments, specifying the depth type, using the following message:
+
+You will then get updates about ticker for this instrument:
+
+To unsubscribe:
+
+### Market Trades
+
+> Subscribe to Market Trades
+
+```json
+{
+  "action": "subscribe",
+  "channel": "markettrades",
+  "instrument": "XGDX-BTC-USD-C"
+}
+```
+
+> Market Trades Ticker updates
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "markettrades",
+  "instrument": "XGDX-BTC-USD-C",
+  "timestamp": "2018-03-15T08:43:32.456Z",
+  "price": 7854.34,
+  "amount": 0.5396,
+  "type": "MARKET",
+  "side": "BUY"
+}
+```
+
+> Unsubscribe from Market Trades
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "markettrades",
+  "instrument": "XGDX-BTC-USD-C"
+}
+```
+
+You can subscribe to market trades for instruments using the following message:
+
+You will then get updates about market trades for this instrument:
+To unsubscribe:
+
+### Large Trades
+
+> Subscribe to Larger Trades
+
+```json
+{
+  "action": "subscribe",
+  "channel": "whales",
+  "selector": "BTC-USD",
+  "baseQty": 1.0
+}
+```
+
+> Larger Trades Ticker Updates
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "whales",
+  "instrument": "XGDX-BTC-USD-C",
+  "timestamp": "2018-03-15T08:43:32.456Z",
+  "price": 7854.34,
+  "amount": 1.5396,
+  "type": "MARKET",
+  "side": "BUY"
+}
+```
+
+> Unsubscribe from Larger Trades
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "whales",
+  "selector": "BTC-USD",
+  "baseQty": 1.0
+}
+```
+
+You can filter the market trades feed for a given pair/instrument to only get information about trades larger than a given quantity:
+
+You will then get updates about market trades that match the selector and are above the minQty:
+
+To unsubscribe:
+
+### Funded/Market Depth
+
+> Subscribe to Funded Depth
+
+```json
+{
+  "action": "subscribe",
+  "channel": "depth",
+  "depth": "FUNDED",
+  "instrument": "XGDX-BTC-USD-C"
+}
+```
+
+> Subscribe to Market Depth
+
+```json
+{
+  "action": "subscribe",
+  "channel": "depth",
+  "depth": "MARKET",
+  "instrument": "XGDX-BTC-USD-C"
+}
+```
+
+> Funded/Market Depth Ticker Updates
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "depth",
+  "instrument": "XGDX-BTC-USD-C",
+  "depth": "FUNDED",
+  "bids": [
+    { "price": 1.0, "quantity": 0.36937, "venue": "XGDX" },
+    { "price": 0.99, "quantity": 23.689365, "venue": "XGDX" }
+  ],
+  "asks": [
+    { "price": 1.01, "quantity": 68.4903, "venue": "XGDX" },
+    { "price": 1.02, "quantity": 783.457395, "venue": "XGDX" }
+  ]
+}
+```
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "depth",
+  "instrument": "AGGR-BTC-USD-C",
+  "depth": "FUNDED",
+  "bids": [
+    { "price": 1.0, "quantity": 0.36937, "venue": "XBTS" },
+    { "price": 1.0, "quantity": 14.5048, "venue": "XGDX" },
+    { "price": 0.99, "quantity": 23.689365, "venue": "XBFX" }
+  ],
+  "asks": [
+    { "price": 1.01, "quantity": 68.4903, "venue": "XGDX" },
+    { "price": 1.02, "quantity": 783.457395, "venue": "XBTR" }
+  ]
+}
+```
+
+> Unsubscribe from Funded/Market Depth
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "depth",
+  "depth": "FUNDED",
+  "instrument": "XGDX-BTC-USD-C"
+}
+```
+
+You can subscribe to funded/market depth for instruments using the following message:
+
+You will then get updates about the depth for this instrument:
+
+For an aggregated book:
+
+To unsubscribe:
+
+### Quote Depth
+
+> Subscribe to Core Price
+
+```json
+{
+  "action": "subscribe",
+  "channel": "depth",
+  "depth": "QUOTE",
+  "instrument": "XBLK-BTC-USD-C"
+}
+```
+
+> Core Price Ticker Updates
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "quote",
+  "instrument": "XBLK-BTC-USD-C",
+  "depth": "QUOTE",
+  "bids": [
+    { "price": 1.0, "quantity": 1, "venues": ["XGDX", "XBFX"] },
+    { "price": 0.99, "quantity": 2, "venues": ["XBTS", "XGDX"] }
+  ],
+  "asks": [
+    { "price": 1.01, "quantity": 1, "venues": ["XBTS", "XGDX"] },
+    { "price": 1.02, "quantity": 2, "venues": ["XGDX", "XBFX", "XBTS"] }
+  ]
+}
+```
+
+> Unsubscribe from Core Price
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "depth",
+  "depth": "QUOTE",
+  "instrument": "XBLK-BTC-USD-C"
+}
+```
+
+You can subscribe to core price updates for instruments using the following message:
+You will then get updates about our core price for this instrument:
+To unsubscribe:
+
+## Venue information
+
+### Balances
+
+> Subscribe to Balances:
+
+```json
+{
+  "action": "subscribe",
+  "channel": "balances"
+}
+```
+
+> Balance Ticker Updates:
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "balances",
+  "venue": "XGDX",
+  "currency": "BTC",
+  "value": 134.694853
+}
+```
+
+> Unsubscribe to Balances:
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "balances"
+}
+```
+
+You can subscribe to balances updates using the following message:
+
+You will then receive balance updates when the balance at a venue changes. For example, if the BTC balance of GDAX, you would receive:
+
+To unsubscribe:
+
+### Total Balances
+
+> Subscribe to Total Balances
+
+```json
+{
+  "action": "subscribe",
+  "channel": "totalBalances"
+}
+```
+
+> Total Balance Ticker Updates
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "totalBalances",
+  "venue": "XGDX",
+  "fiatTotal": 200000.0,
+  "fiatCryptoTotal": 100000.0,
+  "totalByCurrencies": {
+    "BTC": 50000.0,
+    "ETH": 50000.0,
+    "USD": 100000.0
   }
 }
 ```
 
-Subscribe to notifications for all new bitcoin transactions.
+You can subscribe to total balances updates using the following message:
 
-`{"op": "unconfirmed_sub"}`
+You will then receive balance updates each 10 seconds of the total balance in USD. For example, for GDAX, you would receive:
 
-Unsubscribe to notifications
-
-`{"op" : "unconfirmed_unsub"}`
-
-
-## Subscribing to an Address
-
-> Sample data:
+> Unsubscribe from Total Balances
 
 ```json
 {
-    "op": "utx",
-    "x": {
-        "lock_time": 0,
-        "ver": 1,
-        "size": 192,
-        "inputs": [
-            {
-                "sequence": 4294967295,
-                "prev_out": {
-                    "spent": true,
-                    "tx_index": 99005468,
-                    "type": 0,
-                    "addr": "1BwGf3z7n2fHk6NoVJNkV32qwyAYsMhkWf",
-                    "value": 65574000,
-                    "n": 0,
-                    "script": "76a91477f4c9ee75e449a74c21a4decfb50519cbc245b388ac"
-                },
-                "script": "483045022100e4ff962c292705f051c2c2fc519fa775a4d8955bce1a3e29884b2785277999ed02200b537ebd22a9f25fbbbcc9113c69c1389400703ef2017d80959ef0f1d685756c012102618e08e0c8fd4c5fe539184a30fe35a2f5fccf7ad62054cad29360d871f8187d"
-            }
-        ],
-        "time": 1440086763,
-        "tx_index": 99006637,
-        "vin_sz": 1,
-        "hash": "0857b9de1884eec314ecf67c040a2657b8e083e1f95e31d0b5ba3d328841fc7f",
-        "vout_sz": 1,
-        "relayed_by": "127.0.0.1",
-        "out": [
-            {
-                "spent": false,
-                "tx_index": 99006637,
-                "type": 0,
-                "addr": "1A828tTnkVFJfSvLCqF42ohZ51ksS3jJgX",
-                "value": 65564000,
-                "n": 0,
-                "script": "76a914640cfdf7b79d94d1c980133e3587bd6053f091f388ac"
-            }
-        ]
-    }
+  "action": "unsubscribe",
+  "channel": "totalBalances"
 }
 ```
 
-Receive new transactions for a specific bitcoin address:
+To unsubscribe:
 
-`{"op":"addr_sub", "addr":"$bitcoin_address"}`
+## Orders
 
-Unsubscribe
+### Order Updates
 
-`{"op":"addr_unsub", "addr":"$bitcoin_address"}`
-
-
-## Subscribing to new Blocks
-
-> Sample data:
+> Subscribe to Orders
 
 ```json
 {
-    "op": "block",
-    "x": {
-        "txIndexes": [
-            3187871,
-            3187868
-        ],
-        "nTx": 0,
-        "totalBTCSent": 0,
-        "estimatedBTCSent": 0,
-        "reward": 0,
-        "size": 0,
-        "blockIndex": 190460,
-        "prevBlockIndex": 190457,
-        "height": 170359,
-        "hash": "00000000000006436073c07dfa188a8fa54fefadf571fd774863cda1b884b90f",
-        "mrklRoot": "94e51495e0e8a0c3b78dac1220b2f35ceda8799b0a20cfa68601ed28126cfcc2",
-        "version": 1,
-        "time": 1331301261,
-        "bits": 436942092,
-        "nonce": 758889471
-    }
+  "action": "subscribe",
+  "channel": "orders"
 }
 ```
 
-Receive notifications when a new block is found. Note: if the chain splits you will receive more than one notification for a specific block height.
+> Order has been accepted by system
 
-`{"op":"blocks_sub"}`
+```json
+{
+  "seqnum": 1337,
+  "channel": "orders",
+  "created": "2018-01-01T00:00:00.000Z",
+  "id": "123e4567-e89b-12d3-a456-426655440000",
+  "ref": "6994",
+  "instrument": "XGDX-BTC-USD-C",
+  "route": "DIRECT",
+  "parent": null,
+  "side": "BUY",
+  "type": "LIMIT",
+  "quantity": 0.1,
+  "executedQuantity": 0,
+  "price": 5000.01,
+  "executedPrice": null,
+  "portfolio": "BTC_BC",
+  "state": {
+    "coreState": "INITIAL",
+    "pendingState": "NONE",
+    "fillState": "NONE"
+  },
+  "attributes": {}
+}
+```
 
-Unsubscribe
+> Order has been locked by a venue
 
-`{"op":"blocks_unsub"}`
+```json
+{
+  "seqnum": 1337,
+  "channel": "orders",
+  "created": "2018-01-01T00:00:00.000Z",
+  "id": "123e4567-e89b-12d3-a456-426655440000",
+  "ref": "6994",
+  "instrument": "XGDX-BTC-USD-C",
+  "route": "DIRECT",
+  "parent": null,
+  "side": "BUY",
+  "type": "LIMIT",
+  "quantity": 0.1,
+  "executedQuantity": 0,
+  "price": 5000.01,
+  "executedPrice": null,
+  "portfolio": "BTC_BC",
+  "state": {
+    "coreState": "LOCKED",
+    "pendingState": "NONE",
+    "fillState": "NONE"
+  },
+  "attributes": {}
+}
+```
 
-## Debugging OPs
+> Order has been sitting on the book
 
-Responds with the latest block:
+```json
+{
+  "seqnum": 1337,
+  "channel": "orders",
+  "created": "2018-01-01T00:00:00.000Z",
+  "id": "123e4567-e89b-12d3-a456-426655440000",
+  "ref": "6994",
+  "instrument": "XGDX-BTC-USD-C",
+  "route": "DIRECT",
+  "parent": null,
+  "side": "BUY",
+  "type": "LIMIT",
+  "quantity": 0.1,
+  "executedQuantity": 0,
+  "price": 5000.01,
+  "executedPrice": null,
+  "portfolio": "BTC_BC",
+  "state": {
+    "coreState": "WORKING",
+    "pendingState": "NONE",
+    "fillState": "NONE"
+  },
+  "attributes": {}
+}
+```
 
-`{"op":"ping_block"}`
+> Order has been partially filled
 
-Responds with the latest transaction. If subscribed to any addresses it will respond with the latest transaction involving those addresses.
+```json
+{
+    "seqnum": 1337,
+    "channel": "orders",
+    "created": "2018-01-01T00:00:00.000Z",
+    "id": "123e4567-e89b-12d3-a456-426655440000",
+    "ref": "6994",
+    "instrument" : "XGDX-BTC-USD-C",
+    "route": "DIRECT",
+    "parent": null,
+    "side": "BUY",
+    "type": "LIMIT",
+    "quantity": 0.1,
+    "executedQuantity": 0.05,
+    "price": 5000.01,
+    "executedPrice": 5000.01,
+    "portfolio" : "BTC_BC",
+    "state": {
+        "coreState": "WORKING",
+        "pendingState": "NONE",
+        "fillState": "PARTIALLY_FILLED"
+    }
+    "attributes": {}
+}
+```
 
-`{"op":"ping_tx"}`
+> Order has been completed, no more updates will be sent
 
+```json
+{
+  "seqnum": 1337,
+  "channel": "orders",
+  "created": "2018-01-01T00:00:00.000Z",
+  "id": "123e4567-e89b-12d3-a456-426655440000",
+  "ref": "6994",
+  "instrument": "XGDX-BTC-USD-C",
+  "route": "DIRECT",
+  "parent": null,
+  "side": "BUY",
+  "type": "LIMIT",
+  "quantity": 0.1,
+  "executedQuantity": 0.1,
+  "price": 5000.01,
+  "executedPrice": 5000.01,
+  "portfolio": "BTC_BC",
+  "state": {
+    "coreState": "FILLED",
+    "pendingState": "NONE",
+    "fillState": "FILLED"
+  },
+  "attributes": {}
+}
+```
+
+> Unsubscribe from orders
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "orders"
+}
+```
+
+To subscribe to order updates, send the following message:
+
+When an order changes state or receives a fill, an update is sent, execution reports are sent separately.
+
+Here’s the example of the lifecycle of an order:
+
+The order has been accepted by the system.
+
+The order has been locked by a venue.
+
+The order is now sitting on the book.
+
+The order got partially filled.
+
+The order has been completed, no more updates will be sent.
+
+To unsubscribe, send:
+
+### Execution reports
+
+> Subscribe to Execution Reports
+
+```json
+{
+  "action": "subscribe",
+  "channel": "reports"
+}
+```
+
+> Execution Report Ticker Update
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "reports",
+  "id": "123e4567-e89b-12d3-a456-426655440000",
+  "ref": "6994",
+  "timestamp": "2018-04-01T06:46:34",
+  "tradeType": "DMA",
+  "quantity": "0.05",
+  "price": "5000.01"
+}
+```
+
+> Unsubscribe from Execution Reports
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "reports"
+}
+```
+
+To subscribe to execution reports, send the following message:
+
+Each time an order gets a fill, you’ll receive a notification as follows:
+
+To unsubscribe to execution reports, send the following message:
+
+## Portfolio
+
+### Portfolio Updates
+
+> Subscribe to Portfolio Updates
+
+```json
+{
+  "action": "subscribe",
+  "channel": "portfolio"
+}
+```
+
+> Portfolio Update Ticker Update
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "portfolio",
+  "book": "BC_MM",
+  "portfolio": "BTC_BC",
+  "openingQuantity": 1000.0,
+  "executedQuantity": 999.9,
+  "transactions": [
+    {
+      "instrument": "XGDX-BTC-USD-C",
+      "timestamp": "2018-03-16T13:35:45.045Z",
+      "side": "SELL",
+      "quantity": 0.1,
+      "price": 10000.0
+    }
+  ]
+}
+```
+
+> Unsubscribe from Portfolio Updates
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "portfolio"
+}
+```
+
+You can subscribe to portfolio updates using the following message:
+You will then receive the full portfolio when it updates:
+
+To unsubscribe:
+
+### Portfolio Analytics
+
+> Subscribe to Portfolio Analytics
+
+```json
+{
+  "action": "subscribe",
+  "channel": "portfolioanalytics"
+}
+```
+
+> Portfolio Analytic Ticker Update
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "portfolioanalytics",
+  "book": "BC_MM",
+  "portfolio": "BTC_BC",
+  "referencePrice": 9000.0,
+  "spot": 9100.0,
+  "openingQuantity": 2.0,
+  "quantity": 10.0,
+  "delta": 91000.0,
+  "pnl": 1100.0
+}
+```
+
+> Unsubscribe from Portfolio Analytics
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "portfolioanalytics"
+}
+```
+
+You can subscribe to portfolio analytics using the following message:
+
+You will then receive the last analytics updates about a portfolio:
+
+To unsubscribe:
+
+### Portfolio Risk
+
+> Subscribe to Portfolio Risk
+
+```json
+{
+  "action": "subscribe",
+  "channel": "portfoliorisk"
+}
+```
+
+> Portfolio Risk Ticker Update
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "portfolioanalytics",
+  "portfolio": "BTC_BC",
+  "riskPosition": 10.0,
+  "riskLongPosition": 7000.0,
+  "riskLongPositionVwap": 6500.0,
+  "riskShortPosition": 6500.0,
+  "riskShortPositionVwap": 6300.0
+}
+```
+
+> Unsubscribe from Portfolio Risk
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "portfoliorisk"
+}
+```
+
+You can subscribe to portfolio risk using the following message:
+
+You will then receive the last risk updates about a portfolio:
+
+To unsubscribe:
+
+## Miscellaneous
+
+### Configuration
+
+> Subscribe to Configuration Updates
+
+```json
+{
+  "action": "subscribe",
+  "channel": "config"
+}
+```
+
+> Configuration Update Ticker Update
+
+```json
+{
+  "seqnum": 1337,
+  "channel": "config",
+  "configuration": {
+    "venue.aggregate.venues": ["XGDX", "XBTS"],
+    "venue.quote.tiers": [1.0, 10.0, 20.0, 50.0]
+  }
+}
+```
+
+> Unsubscribe from Configuration Updates
+
+```json
+{
+  "action": "unsubscribe",
+  "channel": "config"
+}
+```
+
+You can subscribe to configuration updates using the following message:
+
+You will then receive the full public config when it updates:
+
+To unsubscribe:
