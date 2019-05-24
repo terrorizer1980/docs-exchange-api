@@ -10,14 +10,7 @@ toc_footers:
   - <a href='https://blockchain.com/wallet'>Get a free wallet</a>
 
 includes:
-  - payments
-  - wallet
-  - data
-  - plain
   - websocket
-  - markets
-  - charts
-  - errors
 
 search: true
 ---
