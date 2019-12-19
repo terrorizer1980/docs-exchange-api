@@ -7,10 +7,12 @@ language_tabs: # must be one of https://git.io/vQNgJ
 
 toc_footers:
   - <a href='https://api.blockchain.info/customer/signup'>Request an API key</a>
-  - <a href='https://blockchain.com/wallet'>Get a free wallet</a>
+  - <a href='https://login.blockchain.com/#/signup'>Get a free wallet</a>
 
 includes:
-  - websocket
+  - retail_gateway
+  - anonymous_channels
+  - auth_channels
 
 search: true
 ---
