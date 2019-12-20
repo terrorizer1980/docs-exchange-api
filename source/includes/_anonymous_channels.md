@@ -11,7 +11,7 @@
 }
 ```
 
-A heartbeat can be sent by the server by subscribing to the heartbeat channel.
+A heartbeat can be sent by the server by subscribing to the `heartbeat` channel.
 
 > Server response:
 
@@ -70,7 +70,7 @@ You can subscribe for multiple symbols but not for multiple granularities per sy
 
 The server will send confirmation of the subscription.
 
-> Heartbeat messages:
+> Updated event on the prices channel:
 
 ```json
 {
@@ -108,43 +108,40 @@ In order to receive ticker updates, `ticker` channel is available. Subscriptions
 }
 ```
 
-> Example ticker update:
+> Example ticker snapshot:
 
 ```json
 {
-  "seqnum": 2,
-  "event": "updated",
+  "seqnum": 8,
+  "event": "snapshot",
   "channel": "ticker",
   "symbol": "BTC-USD",
-  "timestamp": "2019-05-31T08:36:45.6667fconten53Z",
-  "side": "buy",
-  "qty": "1000.0",
-  "price": "8345.67"
+  "price_24h": 4988.0,
+  "volume_24h": 0.3015,
+  "last_trade_price": 5000.0
 }
 ```
 
-## Trades
+## Trading
 
 > Subscribe to channel:
 
 ```json
 {
   "action": "subscribe",
-  "channel": "trades",
-  "symbol": "ETH-USD"
+  "channel": "trading"
 }
 ```
 
-In order to receive trade updates, `trades` channel is available. The server will send confirmation of the subscription.
+In order to receive trade updates, `trading` channel is available. The server will send confirmation of the subscription.
 
 > Server response:
 
 ```json
 {
-  "seqnum": 0,
+  "seqnum": 4,
   "event": "subscribed",
-  "channel": "trades",
-  "symbol": "ETH-USD"
+  "channel": "trading"
 }
 ```
 
@@ -152,15 +149,31 @@ In order to receive trade updates, `trades` channel is available. The server wil
 
 ```json
 {
-  "seqnum": 21,
+  "seqnum": 6,
   "event": "updated",
-  "channel": "trades",
+  "channel": "trading",
+  "orderID": "77309580463",
+  "clOrdID": "8105-20191220",
   "symbol": "BTC-USD",
-  "timestamp": "2019-08-13T11:30:06.100140Z",
   "side": "sell",
-  "qty": 8.5e-5,
-  "price": 11252.4,
-  "trade_id": "12884909920"
+  "ordType": "limit",
+  "orderQty": 0.015,
+  "leavesQty": 0.0,
+  "cumQty": 0.015,
+  "avgPx": 5000.0,
+  "ordStatus": "filled",
+  "timeInForce": "GTC",
+  "text": "Fill",
+  "execType": "F",
+  "execID": "385668",
+  "transactTime": "2019-12-20T16:17:53.000857278Z",
+  "msgType": 8,
+  "lastPx": 5000.0,
+  "lastShares": 0.015,
+  "tradeId": "77309432596",
+  "fee": 0.18,
+  "liquidityIndicator": "R",
+  "price": 5000.0
 }
 ```
 
@@ -175,7 +188,7 @@ In order to receive trade updates, `trades` channel is available. The server wil
 }
 ```
 
-To receive symbol updates, subscribe to the `symbols` channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current symbol status.
+To receive symbol updates, subscribe to the `symbols` channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current `symbol` status.
 
 > Server response:
 
@@ -367,7 +380,7 @@ When a `symbol` is in a halt state the auction data will populate as the book bu
 }
 ```
 
-Level 2 Order Book data is available through the l2 channel. This channel return the volume available at each price. All the price levels are retrieved with this channel. Subscribing is done per symbol. Each entry in bids and asks arrays is a price level, along with its price (px), quantity (qty) and number of orders (num) attributes.
+Level 2 Order Book data is available through the `l2` channel. This channel returns the volume available at each price. All the price levels are retrieved with this channel. Subscribing is done per symbol. Each entry in bids and asks arrays is a price level, along with its price (`px`), quantity (`qty`) and number of orders (`num`) attributes.
 
 > Server response:
 
@@ -465,7 +478,7 @@ Level 2 Order Book data is available through the l2 channel. This channel return
 }
 ```
 
-Level 3 Order Book data is available through the `l3` channel. This channel returns all the order updates reaching the exchange; by applying the updates to the snapshot you can recreate the full state of the orderbook. Subscribing is done per symbol. Each entry in bids and asks arrays is an order, along with its id (id), price (px) and quantity (qty) attributes.
+Level 3 Order Book data is available through the `l3` channel. This channel returns all the order updates reaching the exchange; by applying the updates to the snapshot you can recreate the full state of the orderbook. Subscribing is done per symbol. Each entry in bids and asks arrays is an order, along with its id (`id`), price (`px`) and quantity (`qty`) attributes.
 
 > Server response:
 
