@@ -220,6 +220,9 @@
         <ul class="search-results"></ul>
       <ul id="toc" class="toc-list-h1">
           <li>
+            <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
+          </li>
+          <li>
             <a href="#retail-gateway-ws-api" class="toc-h1 toc-link" data-title="Retail Gateway - WS API">Retail Gateway - WS API</a>
               <ul class="toc-list-h2">
                   <li>
@@ -271,7 +274,7 @@
                     <a href="#ticker" class="toc-h2 toc-link" data-title="Ticker">Ticker</a>
                   </li>
                   <li>
-                    <a href="#trades" class="toc-h2 toc-link" data-title="Trades">Trades</a>
+                    <a href="#trading" class="toc-h2 toc-link" data-title="Trading">Trading</a>
                   </li>
                   <li>
                     <a href="#symbols" class="toc-h2 toc-link" data-title="Symbols">Symbols</a>
@@ -333,7 +336,9 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id='retail-gateway-ws-api'>Retail Gateway - WS API</h1>
+        <h1 id='introduction'>Introduction</h1>
+<p>Welcome to Blockchain.com&#39;s Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades. Interaction with the API will require an API key, request one by logging into the Exchange and going to Settings &gt; API Settings.</p>
+<h1 id='retail-gateway-ws-api'>Retail Gateway - WS API</h1>
 <p>The Websocket API can be used to receive market data and to interact with the trading system in real time. Every message is in a JSON format and trading messages use the FIX standard for naming of fields, and message types.</p>
 
 <p>Each type of data is provided over a dedicated channel. Clients need to subscribe to all relevant channels they wish to receive real time updates from.</p>
@@ -422,12 +427,12 @@
 </tr>
 <tr>
 <td>auth</td>
-<td>anonymous</td>
+<td>authenticated</td>
 <td>To authenticate a web socket connection</td>
 </tr>
 <tr>
 <td>balances</td>
-<td>anonymous</td>
+<td>authenticated</td>
 <td>To receive balance updates</td>
 </tr>
 </tbody></table>
@@ -452,7 +457,7 @@
 
 <p>A channel may expose other bespoke actions.</p>
 <h2 id='response'>Response</h2><h3 id='sequence-numbers'>Sequence Numbers</h3>
-<p>Each message sent from the server will contain a sequence number seqnum which will be incremented by 1 with each message. If the client receives an seqnum which has skipped one or more sequences, it indicates that a message was missed and the client is recommended to restart the websocket connection.</p>
+<p>Each message sent from the server will contain a sequence number <code>seqnum</code> which will be incremented by 1 with each message. If the client receives a <code>seqnum</code> which has skipped one or more sequences, it indicates that a message was missed and the client is recommended to restart the websocket connection.</p>
 <h3 id='event'>Event</h3>
 <p>In addition, each response field will contain an event field with the corresponding channel to indicate the purpose of the message. The following events are supported:</p>
 
@@ -490,7 +495,7 @@
 </tr>
 </tbody></table>
 
-<p>Each time an action is applied to a channel, an administrative event is sent from the server to notify whether the action was applied successfully.</p>
+<p>Each time an <code>action</code> is applied to a channel, an administrative event is sent from the server to notify whether the <code>action</code> was applied successfully.</p>
 <h2 id='data-types'>Data Types</h2>
 <p>All Messages use the standard JSON format. The following data types are supported:</p>
 
@@ -517,8 +522,12 @@
 <td></td>
 </tr>
 </tbody></table>
-<h2 id='api-fair-usage-and-rate-limit'>API fair usage and rate limit</h2>
-<p>Currently there is no explicit limit to the number of requests per minute that clients can perform for each connection. Instead we monitor client connections to ensure fair usage. A hard rate limitation might be implemented in the future.</p>
+<h2 id='api-fair-usage-and-rate-limit'>API fair usage and rate limit</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rejected"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Connection throttling enabled, your messages will be ignored."</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>Currently there is a limit of 1200 messages per minute. If the limit is exceeded, you will receive a <code>rejected</code> event. After waiting a minute, normal functionality will resume and you will be able to send messages again.</p>
 <h2 id='response-data-throttling-and-delays'>Response data throttling and delays</h2>
 <p>The response and update messages are never delayed, clients will get every update as soon as it happens.</p>
 <h1 id='anonymous-channels'>Anonymous Channels</h1><h2 id='heartbeat'>Heartbeat</h2>
@@ -530,7 +539,7 @@
   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"heartbeat"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>A heartbeat can be sent by the server by subscribing to the heartbeat channel.</p>
+<p>A heartbeat can be sent by the server by subscribing to the <code>heartbeat</code> channel.</p>
 
 <blockquote>
 <p>Server response:</p>
@@ -584,7 +593,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <p>The server will send confirmation of the subscription.</p>
 
 <blockquote>
-<p>Heartbeat messages:</p>
+<p>Updated event on the prices channel:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
@@ -617,53 +626,66 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <blockquote>
-<p>Example ticker update:</p>
+<p>Example ticker snapshot:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"snapshot"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-05-31T08:36:45.6667fconten53Z"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"qty"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1000.0"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8345.67"</span><span class="w">
+  </span><span class="s2">"price_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">4988.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"volume_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3015</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"last_trade_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='trades'>Trades</h2>
+</span></code></pre><h2 id='trading'>Trading</h2>
 <blockquote>
 <p>Subscribe to channel:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH-USD"</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>In order to receive trade updates, <code>trades</code> channel is available. The server will send confirmation of the subscription.</p>
+<p>In order to receive trade updates, <code>trading</code> channel is available. The server will send confirmation of the subscription.</p>
 
 <blockquote>
 <p>Server response:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
   </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH-USD"</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <blockquote>
 <p>Example trade update:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
   </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"orderID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"77309580463"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"clOrdID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8105-20191220"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-08-13T11:30:06.100140Z"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"qty"</span><span class="p">:</span><span class="w"> </span><span class="mf">8.5e-5</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">11252.4</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"trade_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12884909920"</span><span class="w">
+  </span><span class="s2">"ordType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"limit"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"orderQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.015</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"leavesQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"cumQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.015</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"avgPx"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ordStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"filled"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timeInForce"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GTC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fill"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"execType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"F"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"execID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"385668"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"transactTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-12-20T16:17:53.000857278Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"msgType"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"lastPx"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"lastShares"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.015</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"77309432596"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"fee"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.18</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"liquidityIndicator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"R"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h2 id='symbols'>Symbols</h2>
 <blockquote>
@@ -674,7 +696,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>To receive symbol updates, subscribe to the <code>symbols</code> channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current symbol status.</p>
+<p>To receive symbol updates, subscribe to the <code>symbols</code> channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current <code>symbol</code> status.</p>
 
 <blockquote>
 <p>Server response:</p>
@@ -907,7 +929,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>Level 2 Order Book data is available through the l2 channel. This channel return the volume available at each price. All the price levels are retrieved with this channel. Subscribing is done per symbol. Each entry in bids and asks arrays is a price level, along with its price (px), quantity (qty) and number of orders (num) attributes.</p>
+<p>Level 2 Order Book data is available through the <code>l2</code> channel. This channel returns the volume available at each price. All the price levels are retrieved with this channel. Subscribing is done per symbol. Each entry in bids and asks arrays is a price level, along with its price (<code>px</code>), quantity (<code>qty</code>) and number of orders (<code>num</code>) attributes.</p>
 
 <blockquote>
 <p>Server response:</p>
@@ -998,7 +1020,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>Level 3 Order Book data is available through the <code>l3</code> channel. This channel returns all the order updates reaching the exchange; by applying the updates to the snapshot you can recreate the full state of the orderbook. Subscribing is done per symbol. Each entry in bids and asks arrays is an order, along with its id (id), price (px) and quantity (qty) attributes.</p>
+<p>Level 3 Order Book data is available through the <code>l3</code> channel. This channel returns all the order updates reaching the exchange; by applying the updates to the snapshot you can recreate the full state of the orderbook. Subscribing is done per symbol. Each entry in bids and asks arrays is an order, along with its id (<code>id</code>), price (<code>px</code>) and quantity (<code>qty</code>) attributes.</p>
 
 <blockquote>
 <p>Server response:</p>
@@ -1077,16 +1099,9 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"asks"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h1 id='authenticated-channels'>Authenticated Channels</h1><h2 id='authenticated'>Authenticated</h2>
-<blockquote>
-<p>To authentication send:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"auth"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZXRhaWwtY29yZSIsImV4cCI6MTU2NTY5NjAzNCwiaWF0IjoxNTY1Njk1NzM0LCJ1c2VySUQiOiI3ZjM0NTY3OC0yMjIyLTQ0NDQtNDQ0NC01NTU1NTU1NTU1NTUiLCJqdGkiOiI1NTU1NTUtNjY2Ni03Nzc3LTg4ODgtOTk5OTk5OTk5OTk5In0.amXFuAKVkNnu_i8RB4TVBfJbTyKX9zIuTLt8tldicIw"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>To authenticate a web socket connection, the client must subscribe to the “auth” channel passing a token field. Alternatively a client can provide the header cookie auth_token on a new connection and then authentication will take place immediately without the need to subscribing to auth channel.</p>
+<p>&lt;!-- To authentication send: --&gt;</p>
+
+<p>To authenticate a web socket connection, the client must subscribe to the <code>auth</code> channel passing a token field. Alternatively a client can provide the header cookie <code>auth_token</code> on a new connection and then authentication will take place immediately without the need to subscribing to <code>auth</code> channel.</p>
 
 <blockquote>
 <p>If authentication is successful, the server will send an initial notification.</p>
@@ -1107,7 +1122,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Authentication Failed"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h2 id='trading'>Trading</h2>
-<p>The client can submit and cancel orders, as well as receive order executions, through the trading channel. The messages are in JSON format and the attribute names are using standardised FIX 4.2 Field names.</p>
+<p>The client can submit and cancel orders, as well as receive order executions, through the <code>trading</code> channel. The messages are in JSON format and the attribute names are using standardised FIX 4.2 Field names.</p>
 
 <p>Below is a table showing the permitted FIX fields used as a JSON key for cancelling / creating an order:</p>
 
@@ -1180,10 +1195,10 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <tr>
 <td>432</td>
 <td>expireDate</td>
-<td>string</td>
+<td>number</td>
 <td>required for GTD orders</td>
 <td>expiry date in the format YYYYMMDD</td>
-<td>&quot;20190318&quot;</td>
+<td>20190318</td>
 </tr>
 <tr>
 <td>99</td>
@@ -1387,7 +1402,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <td>tradeId</td>
 <td>string</td>
 <td>The unique ID assigned to the order fill, also known as trade</td>
-<td>&quot;0&quot;</td>
+<td>&quot;77309432596&quot;</td>
 </tr>
 </tbody></table>
 <h3 id='state'>state</h3>
@@ -1453,11 +1468,11 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </tr>
 <tr>
 <td>stop</td>
-<td>Not available yet</td>
+<td>order which has a stop/trigger price, and when that price is reached, it triggers a market order</td>
 </tr>
 <tr>
 <td>stopLimit</td>
-<td>Not available yet</td>
+<td>order which has a stop price and limit price, and when the stop price is reached, it triggers a limit order at the limit price</td>
 </tr>
 </tbody></table>
 <h3 id='timeinforce'>timeInForce</h3>
@@ -1469,7 +1484,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>To submit &amp; cancel orders as well as receive live order updates, subscribe to the authenticated trading channel.</p>
+<p>To submit &amp; cancel orders as well as receive live order updates, subscribe to the authenticated <code>trading</code> channel.</p>
 
 <blockquote>
 <p>Server response:</p>
@@ -1552,15 +1567,15 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <td>GTC</td>
 <td></td>
 <td>X</td>
-<td></td>
-<td></td>
+<td>X</td>
+<td>X</td>
 </tr>
 <tr>
 <td>GTD</td>
 <td></td>
 <td>X</td>
-<td></td>
-<td></td>
+<td>X</td>
+<td>X</td>
 </tr>
 <tr>
 <td>IOC</td>
