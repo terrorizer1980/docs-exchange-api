@@ -2,17 +2,9 @@
 
 ## Authenticated
 
-> To authentication send:
+ <!-- To authentication send: -->
 
-```json
-{
-  "action": "subscribe",
-  "channel": "auth",
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZXRhaWwtY29yZSIsImV4cCI6MTU2NTY5NjAzNCwiaWF0IjoxNTY1Njk1NzM0LCJ1c2VySUQiOiI3ZjM0NTY3OC0yMjIyLTQ0NDQtNDQ0NC01NTU1NTU1NTU1NTUiLCJqdGkiOiI1NTU1NTUtNjY2Ni03Nzc3LTg4ODgtOTk5OTk5OTk5OTk5In0.amXFuAKVkNnu_i8RB4TVBfJbTyKX9zIuTLt8tldicIw"
-}
-```
-
-To authenticate a web socket connection, the client must subscribe to the “auth” channel passing a token field. Alternatively a client can provide the header cookie auth_token on a new connection and then authentication will take place immediately without the need to subscribing to auth channel.
+To authenticate a web socket connection, the client must subscribe to the `auth` channel passing a token field. Alternatively a client can provide the header cookie `auth_token` on a new connection and then authentication will take place immediately without the need to subscribing to `auth` channel.
 
 > If authentication is successful, the server will send an initial notification.
 
@@ -37,23 +29,23 @@ To authenticate a web socket connection, the client must subscribe to the “aut
 
 ## Trading
 
-The client can submit and cancel orders, as well as receive order executions, through the trading channel. The messages are in JSON format and the attribute names are using standardised FIX 4.2 Field names.
+The client can submit and cancel orders, as well as receive order executions, through the `trading` channel. The messages are in JSON format and the attribute names are using standardised FIX 4.2 Field names.
 
 Below is a table showing the permitted FIX fields used as a JSON key for cancelling / creating an order:
 
-| Tag | Field       | Type   | Mandatory                                                                | Description                                                                                                                                                            | Example    |
-| --- | ----------- | ------ | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| 11  | clOrdID     | string | YES                                                                      | Reference field provided by client and cannot exceed 20 characters                                                                                                     | "ABC"      |
-| 55  | symbol      | string | YES                                                                      | Blockchain symbol identifier                                                                                                                                           | "BTC-USD"  |
-| 40  | ordType     | string | YES                                                                      | "market" for market "limit" for limit, "stop" for stop, "stopLimit" for stopLimit                                                                                      | "limit"    |
-| 59  | timeInforce | string | YES                                                                      | "GTC" for Good Till Cancel, "IOC" for Immediate or Cancel, "FOK" for Fill or Kill, “GTC” Good Till Date                                                                | "GTC"      |
-| 54  | side        | string | YES                                                                      | "buy" for Buy, "sell" for Sell                                                                                                                                         | "buy"      |
-| 38  | orderQty    | number | YES                                                                      | The order size in the terms of the base currency                                                                                                                       | 10.23      |
-| 44  | price       | number | required for limit and stopLimit order types                             | The limit price for the order                                                                                                                                          | 0.12345    |
-| 432 | expireDate  | string | required for GTD orders                                                  | expiry date in the format YYYYMMDD                                                                                                                                     | "20190318" |
-| 99  | stopPx      | number | required for limit and stopLimit order types                             | Price to trigger the stop order                                                                                                                                        | 3500.12    |
-| 110 | minQty      | number | Optional for all market orders and for limit orders with IOC timeInForce | The minimum quantity required for an IOC fill                                                                                                                          | 10.0       |
-| 18  | execInst    | string | Optional for Limit Orders                                                | The order is placed with Add Liquidity Only (aka Post Only): it will not match liquidity immediately. It will be rejected instead of matching liquidity in the market. | ALO        |
+| Tag | Field       | Type   | Mandatory                                                                | Description                                                                                                                                                            | Example   |
+| --- | ----------- | ------ | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| 11  | clOrdID     | string | YES                                                                      | Reference field provided by client and cannot exceed 20 characters                                                                                                     | "ABC"     |
+| 55  | symbol      | string | YES                                                                      | Blockchain symbol identifier                                                                                                                                           | "BTC-USD" |
+| 40  | ordType     | string | YES                                                                      | "market" for market "limit" for limit, "stop" for stop, "stopLimit" for stopLimit                                                                                      | "limit"   |
+| 59  | timeInforce | string | YES                                                                      | "GTC" for Good Till Cancel, "IOC" for Immediate or Cancel, "FOK" for Fill or Kill, “GTC” Good Till Date                                                                | "GTC"     |
+| 54  | side        | string | YES                                                                      | "buy" for Buy, "sell" for Sell                                                                                                                                         | "buy"     |
+| 38  | orderQty    | number | YES                                                                      | The order size in the terms of the base currency                                                                                                                       | 10.23     |
+| 44  | price       | number | required for limit and stopLimit order types                             | The limit price for the order                                                                                                                                          | 0.12345   |
+| 432 | expireDate  | number | required for GTD orders                                                  | expiry date in the format YYYYMMDD                                                                                                                                     | 20190318  |
+| 99  | stopPx      | number | required for limit and stopLimit order types                             | Price to trigger the stop order                                                                                                                                        | 3500.12   |
+| 110 | minQty      | number | Optional for all market orders and for limit orders with IOC timeInForce | The minimum quantity required for an IOC fill                                                                                                                          | 10.0      |
+| 18  | execInst    | string | Optional for Limit Orders                                                | The order is placed with Add Liquidity Only (aka Post Only): it will not match liquidity immediately. It will be rejected instead of matching liquidity in the market. | ALO       |
 
 Below is a table representing the different permutations permitted for the FIX fields, with X indicating what can be added and where O is not required:
 
@@ -85,7 +77,7 @@ The server can include the following additional FIX fields when notifying of an 
 | 14   | cumQty       | number | The quantity of the order which has been filled                                                                                                                                                                                                                                       | 0.123345                         |
 | 60   | transactTime | string | The time the transaction occurred                                                                                                                                                                                                                                                     | "2019-08-13T13:15:35.000955868Z" |
 | 6    | avgPx        | number | Calculated the Volume Weighted Average Price of all fills for this order                                                                                                                                                                                                              | 345.33                           |
-| 1004 | tradeId      | string | The unique ID assigned to the order fill, also known as trade                                                                                                                                                                                                                         | "0"                              |
+| 1004 | tradeId      | string | The unique ID assigned to the order fill, also known as trade                                                                                                                                                                                                                         | "77309432596"                    |
 
 ### state
 
@@ -107,8 +99,8 @@ Enumerated fields are defined as follows:
 | --------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | limit     | order which has a price limit                                                                                                     |
 | market    | order that will match at any price available in the market, starting from the best prices and filling up to the available balance |
-| stop      | Not available yet                                                                                                                 |
-| stopLimit | Not available yet                                                                                                                 |
+| stop      | order which has a stop/trigger price, and when that price is reached, it triggers a market order                                  |
+| stopLimit | order which has a stop price and limit price, and when the stop price is reached, it triggers a limit order at the limit price    |
 
 ### timeInForce
 
@@ -121,7 +113,7 @@ Enumerated fields are defined as follows:
 }
 ```
 
-To submit & cancel orders as well as receive live order updates, subscribe to the authenticated trading channel.
+To submit & cancel orders as well as receive live order updates, subscribe to the authenticated `trading` channel.
 
 > Server response:
 
@@ -178,8 +170,8 @@ Which TIF are supported. X for supported
 
 |     | Market | Limit | Stop | Stop Limit |
 | --- | ------ | ----- | ---- | ---------- |
-| GTC |        | X     |      |            |
-| GTD |        | X     |      |            |
+| GTC |        | X     | X    | X          |
+| GTD |        | X     | X    | X          |
 | IOC |        | X     |      |            |
 | FOK |        | X     |      |            |
 
