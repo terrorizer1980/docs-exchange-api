@@ -12,16 +12,14 @@ Each type of data is provided over a dedicated channel. Clients need to subscrib
 
 The WS endpoint are, depending on the environment:
 
-| Environment | URI                                                      |
-| ----------- | -------------------------------------------------------- |
-| staging     | `wss://ws.staging.blockchain.info/mercury-gateway/v1/ws` |
-| prod        | `wss://ws.prod.blockchain.info/mercury-gateway/v1/ws`    |
+| Environment | URI                                                   |
+| ----------- | ----------------------------------------------------- |
+| prod        | `wss://ws.prod.blockchain.info/mercury-gateway/v1/ws` |
 
 In order to connect you have to add the following headers to the connection request
 
 | Environment | Headers                                   |
 | ----------- | ----------------------------------------- |
-| staging     | `Origin: https://exchange.blockchain.com` |
 | prod        | `Origin: https://exchange.blockchain.com` |
 
 ## Requests

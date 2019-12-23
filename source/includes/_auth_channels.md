@@ -2,8 +2,6 @@
 
 ## Authenticated
 
- <!-- To authentication send: -->
-
 To authenticate a web socket connection, the client must subscribe to the `auth` channel passing a token field. Alternatively a client can provide the header cookie `auth_token` on a new connection and then authentication will take place immediately without the need to subscribing to `auth` channel.
 
 > If authentication is successful, the server will send an initial notification.
