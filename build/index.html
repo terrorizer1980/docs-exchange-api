@@ -352,10 +352,6 @@
 </tr>
 </thead><tbody>
 <tr>
-<td>staging</td>
-<td><code>wss://ws.staging.blockchain.info/mercury-gateway/v1/ws</code></td>
-</tr>
-<tr>
 <td>prod</td>
 <td><code>wss://ws.prod.blockchain.info/mercury-gateway/v1/ws</code></td>
 </tr>
@@ -369,10 +365,6 @@
 <th>Headers</th>
 </tr>
 </thead><tbody>
-<tr>
-<td>staging</td>
-<td><code>Origin: https://exchange.blockchain.com</code></td>
-</tr>
 <tr>
 <td>prod</td>
 <td><code>Origin: https://exchange.blockchain.com</code></td>
@@ -1099,8 +1091,6 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"asks"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h1 id='authenticated-channels'>Authenticated Channels</h1><h2 id='authenticated'>Authenticated</h2>
-<p>&lt;!-- To authentication send: --&gt;</p>
-
 <p>To authenticate a web socket connection, the client must subscribe to the <code>auth</code> channel passing a token field. Alternatively a client can provide the header cookie <code>auth_token</code> on a new connection and then authentication will take place immediately without the need to subscribing to <code>auth</code> channel.</p>
 
 <blockquote>
