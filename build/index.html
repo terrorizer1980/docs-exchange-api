@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>API Reference</title>
+    <title>Blockchain Exchange API</title>
     <link href="assets/images/favicon.ico" rel="icon" type="image/ico" />
 
     <style>
@@ -223,7 +223,7 @@
             <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
           </li>
           <li>
-            <a href="#retail-gateway-ws-api" class="toc-h1 toc-link" data-title="Retail Gateway - WS API">Retail Gateway - WS API</a>
+            <a href="#websocket-api" class="toc-h1 toc-link" data-title="Websocket API">Websocket API</a>
               <ul class="toc-list-h2">
                   <li>
                     <a href="#connection-and-authentication" class="toc-h2 toc-link" data-title="Connection and authentication">Connection and authentication</a>
@@ -254,7 +254,7 @@
                     <a href="#data-types" class="toc-h2 toc-link" data-title="Data Types">Data Types</a>
                   </li>
                   <li>
-                    <a href="#api-fair-usage-and-rate-limit" class="toc-h2 toc-link" data-title="API fair usage and rate limit">API fair usage and rate limit</a>
+                    <a href="#fair-usage-and-rate-limits" class="toc-h2 toc-link" data-title="Fair usage and rate limits">Fair usage and rate limits</a>
                   </li>
                   <li>
                     <a href="#response-data-throttling-and-delays" class="toc-h2 toc-link" data-title="Response data throttling and delays">Response data throttling and delays</a>
@@ -272,9 +272,6 @@
                   </li>
                   <li>
                     <a href="#ticker" class="toc-h2 toc-link" data-title="Ticker">Ticker</a>
-                  </li>
-                  <li>
-                    <a href="#trading" class="toc-h2 toc-link" data-title="Trading">Trading</a>
                   </li>
                   <li>
                     <a href="#symbols" class="toc-h2 toc-link" data-title="Symbols">Symbols</a>
@@ -313,7 +310,7 @@
                       </ul>
                   </li>
                   <li>
-                    <a href="#newordersingle-creating-new-order" class="toc-h2 toc-link" data-title="NewOrderSingle (creating new order)">NewOrderSingle (creating new order)</a>
+                    <a href="#create-a-new-order-newordersingle" class="toc-h2 toc-link" data-title="Create a new order (NewOrderSingle)">Create a new order (NewOrderSingle)</a>
                       <ul class="toc-list-h3">
                           <li>
                             <a href="#examples" class="toc-h3 toc-link" data-title="Examples">Examples</a>
@@ -321,7 +318,7 @@
                       </ul>
                   </li>
                   <li>
-                    <a href="#cancelorderrequest-cancel-an-order" class="toc-h2 toc-link" data-title="CancelOrderRequest (cancel an order)">CancelOrderRequest (cancel an order)</a>
+                    <a href="#cancel-an-order-cancelorderrequest" class="toc-h2 toc-link" data-title="Cancel an order (CancelOrderRequest)">Cancel an order (CancelOrderRequest)</a>
                   </li>
                   <li>
                     <a href="#balances" class="toc-h2 toc-link" data-title="Balances">Balances</a>
@@ -338,12 +335,12 @@
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
 <p>Welcome to Blockchain.com&#39;s Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades. Interaction with the API will require an API key, request one by logging into the Exchange and going to Settings &gt; API Settings.</p>
-<h1 id='retail-gateway-ws-api'>Retail Gateway - WS API</h1>
+<h1 id='websocket-api'>Websocket API</h1>
 <p>The Websocket API can be used to receive market data and to interact with the trading system in real time. Every message is in a JSON format and trading messages use the FIX standard for naming of fields, and message types.</p>
 
 <p>Each type of data is provided over a dedicated channel. Clients need to subscribe to all relevant channels they wish to receive real time updates from.</p>
 <h2 id='connection-and-authentication'>Connection and authentication</h2>
-<p>The WS endpoint are, depending on the environment:</p>
+<p>The websocket endpoint is,</p>
 
 <table><thead>
 <tr>
@@ -514,7 +511,7 @@
 <td></td>
 </tr>
 </tbody></table>
-<h2 id='api-fair-usage-and-rate-limit'>API fair usage and rate limit</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+<h2 id='fair-usage-and-rate-limits'>Fair usage and rate limits</h2><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rejected"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Connection throttling enabled, your messages will be ignored."</span><span class="w">
 </span><span class="p">}</span><span class="w">
@@ -628,56 +625,6 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"price_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">4988.0</span><span class="p">,</span><span class="w">
   </span><span class="s2">"volume_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3015</span><span class="p">,</span><span class="w">
   </span><span class="s2">"last_trade_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='trading'>Trading</h2>
-<blockquote>
-<p>Subscribe to channel:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>In order to receive trade updates, <code>trading</code> channel is available. The server will send confirmation of the subscription.</p>
-
-<blockquote>
-<p>Server response:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<blockquote>
-<p>Example trade update:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"orderID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"77309580463"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"clOrdID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"8105-20191220"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"ordType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"limit"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"orderQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.015</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"leavesQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"cumQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.015</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"avgPx"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"ordStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"filled"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"timeInForce"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GTC"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fill"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"execType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"F"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"execID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"385668"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"transactTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-12-20T16:17:53.000857278Z"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"msgType"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"lastPx"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"lastShares"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.015</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"77309432596"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"fee"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.18</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"liquidityIndicator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"R"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h2 id='symbols'>Symbols</h2>
 <blockquote>
@@ -1600,7 +1547,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <td>Cancels an order</td>
 </tr>
 </tbody></table>
-<h2 id='newordersingle-creating-new-order'>NewOrderSingle (creating new order)</h2>
+<h2 id='create-a-new-order-newordersingle'>Create a new order (NewOrderSingle)</h2>
 <blockquote>
 <p>Example creating a GTC limit order:</p>
 </blockquote>
@@ -1860,7 +1807,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"tradeId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"fee"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='cancelorderrequest-cancel-an-order'>CancelOrderRequest (cancel an order)</h2>
+</span></code></pre><h2 id='cancel-an-order-cancelorderrequest'>Cancel an order (CancelOrderRequest)</h2>
 <blockquote>
 <p>To cancel order:</p>
 </blockquote>
