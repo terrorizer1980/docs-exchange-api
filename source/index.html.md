@@ -1,5 +1,5 @@
 ---
-title: API Reference
+title: Blockchain Exchange API
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - javascript
