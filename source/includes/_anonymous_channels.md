@@ -122,61 +122,6 @@ In order to receive ticker updates, `ticker` channel is available. Subscriptions
 }
 ```
 
-## Trading
-
-> Subscribe to channel:
-
-```json
-{
-  "action": "subscribe",
-  "channel": "trading"
-}
-```
-
-In order to receive trade updates, `trading` channel is available. The server will send confirmation of the subscription.
-
-> Server response:
-
-```json
-{
-  "seqnum": 4,
-  "event": "subscribed",
-  "channel": "trading"
-}
-```
-
-> Example trade update:
-
-```json
-{
-  "seqnum": 6,
-  "event": "updated",
-  "channel": "trading",
-  "orderID": "77309580463",
-  "clOrdID": "8105-20191220",
-  "symbol": "BTC-USD",
-  "side": "sell",
-  "ordType": "limit",
-  "orderQty": 0.015,
-  "leavesQty": 0.0,
-  "cumQty": 0.015,
-  "avgPx": 5000.0,
-  "ordStatus": "filled",
-  "timeInForce": "GTC",
-  "text": "Fill",
-  "execType": "F",
-  "execID": "385668",
-  "transactTime": "2019-12-20T16:17:53.000857278Z",
-  "msgType": 8,
-  "lastPx": 5000.0,
-  "lastShares": 0.015,
-  "tradeId": "77309432596",
-  "fee": 0.18,
-  "liquidityIndicator": "R",
-  "price": 5000.0
-}
-```
-
 ## Symbols
 
 > Subscribe to channel:
