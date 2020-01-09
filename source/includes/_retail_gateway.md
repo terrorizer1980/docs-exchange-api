@@ -2,7 +2,7 @@
 
 Welcome to Blockchain.com's Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades. Interaction with the API will require an API key, request one by logging into the Exchange and going to Settings > API Settings.
 
-# Retail Gateway - WS API
+# Websocket API
 
 The Websocket API can be used to receive market data and to interact with the trading system in real time. Every message is in a JSON format and trading messages use the FIX standard for naming of fields, and message types.
 
@@ -10,7 +10,7 @@ Each type of data is provided over a dedicated channel. Clients need to subscrib
 
 ## Connection and authentication
 
-The WS endpoint are, depending on the environment:
+The websocket endpoint is,
 
 | Environment | URI                                                   |
 | ----------- | ----------------------------------------------------- |
@@ -83,7 +83,7 @@ All Messages use the standard JSON format. The following data types are supporte
 | string    | UTF-8 encoded unicode string                                                                                                  | "Authentication Failed" |
 | timestamp | UTC Timestamps following the convention YYYY-MM-DDTHH:MM:SS.ssssssZ or YYYY-MM-DDTHH:MM:SS.000ssssssZ or YYYY-MM-DDT00:00:00Z |                         |
 
-## API fair usage and rate limit
+## Fair usage and rate limits
 
 ```json
 {

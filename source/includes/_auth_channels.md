@@ -180,7 +180,7 @@ The `trading` channel supports the following additional actions:
 | NewOrderSingle     | Creates an order |
 | CancelOrderRequest | Cancels an order |
 
-## NewOrderSingle (creating new order)
+## Create a new order (NewOrderSingle)
 
 > Example creating a GTC limit order:
 
@@ -454,7 +454,7 @@ This action creates an order using the provided fields as described above.
 }
 ```
 
-## CancelOrderRequest (cancel an order)
+## Cancel an order (CancelOrderRequest)
 
 > To cancel order:
 
