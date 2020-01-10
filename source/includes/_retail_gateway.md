@@ -1,6 +1,6 @@
 # Introduction
 
-Welcome to Blockchain.com's Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades. Interaction with the API will require an API key, request one by logging into the Exchange and going to Settings > API Settings.
+Welcome to Blockchain.com's Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades.
 
 # Websocket API
 
@@ -8,7 +8,33 @@ The Websocket API can be used to receive market data and to interact with the tr
 
 Each type of data is provided over a dedicated channel. Clients need to subscribe to all relevant channels they wish to receive real time updates from.
 
-## Connection and authentication
+## Authentication
+
+```python
+# Simple python websocket client 
+# https://github.com/websocket-client/websocket-client
+from websocket import create_connection
+options = {}
+options['origin'] = 'https://exchange.blockchain.com'
+url = "wss://ws.prod.blockchain.info/mercury-gateway/v1/ws"
+ws = create_connection(url, **options)
+msg = '{"token": "{API_SECRET}", "action": "subscribe", "channel": "auth"}'
+ws.send(msg)
+result =  ws.recv()
+print(result)
+# { "seqnum":0,
+#   "event":"subscribed",
+#   "channel":"auth",
+#   "readOnly":false }
+ws.close()
+```
+
+Interaction with the API will require an API key. To generate one, go to the [API section](https://exchange.blockchain.com/settings/api) of your Blockchain.com Exchange user settings. Each API key generated will be linked to your account. The only required information is a key name. Optionally you can set trading access, and IP address whitelisting.
+
+Once your key is created you'll be shown an __API Key__ and __API Secret__. Store the secret in a safe place because it will only be shown once.
+
+
+## Connection
 
 The websocket endpoint is,
 

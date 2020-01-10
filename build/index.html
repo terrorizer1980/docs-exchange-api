@@ -202,7 +202,7 @@
       <script src="assets/javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;javascript&quot;]">
+  <body class="index" data-languages="[&quot;code&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -212,7 +212,7 @@
     <div class="toc-wrapper">
       <img src="assets/images/logo.png" class="logo" alt="Logo" />
         <div class="lang-selector">
-              <a href="#" data-language-name="javascript">javascript</a>
+              <a href="#" data-language-name="code">code</a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -226,7 +226,10 @@
             <a href="#websocket-api" class="toc-h1 toc-link" data-title="Websocket API">Websocket API</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#connection-and-authentication" class="toc-h2 toc-link" data-title="Connection and authentication">Connection and authentication</a>
+                    <a href="#authentication" class="toc-h2 toc-link" data-title="Authentication">Authentication</a>
+                  </li>
+                  <li>
+                    <a href="#connection" class="toc-h2 toc-link" data-title="Connection">Connection</a>
                   </li>
                   <li>
                     <a href="#requests" class="toc-h2 toc-link" data-title="Requests">Requests</a>
@@ -334,12 +337,32 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
-<p>Welcome to Blockchain.com&#39;s Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades. Interaction with the API will require an API key, request one by logging into the Exchange and going to Settings &gt; API Settings.</p>
+<p>Welcome to Blockchain.com&#39;s Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades.</p>
 <h1 id='websocket-api'>Websocket API</h1>
 <p>The Websocket API can be used to receive market data and to interact with the trading system in real time. Every message is in a JSON format and trading messages use the FIX standard for naming of fields, and message types.</p>
 
 <p>Each type of data is provided over a dedicated channel. Clients need to subscribe to all relevant channels they wish to receive real time updates from.</p>
-<h2 id='connection-and-authentication'>Connection and authentication</h2>
+<h2 id='authentication'>Authentication</h2><pre class="highlight python tab-python"><code><span class="c"># Simple python websocket client </span>
+<span class="c"># https://github.com/websocket-client/websocket-client</span>
+<span class="kn">from</span> <span class="nn">websocket</span> <span class="kn">import</span> <span class="n">create_connection</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">options</span><span class="p">[</span><span class="s">'origin'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'https://exchange.blockchain.com'</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">"wss://ws.prod.blockchain.info/mercury-gateway/v1/ws"</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">create_connection</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="s">'{"token": "{API_SECRET}", "action": "subscribe", "channel": "auth"}'</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span>  <span class="n">ws</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="c"># { "seqnum":0,</span>
+<span class="c">#   "event":"subscribed",</span>
+<span class="c">#   "channel":"auth",</span>
+<span class="c">#   "readOnly":false }</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</code></pre>
+<p>Interaction with the API will require an API key. To generate one, go to the <a href="https://exchange.blockchain.com/settings/api">API section</a> of your Blockchain.com Exchange user settings. Each API key generated will be linked to your account. The only required information is a key name. Optionally you can set trading access, and IP address whitelisting.</p>
+
+<p>Once your key is created you&#39;ll be shown an <strong>API Key</strong> and <strong>API Secret</strong>. Store the secret in a safe place because it will only be shown once.</p>
+<h2 id='connection'>Connection</h2>
 <p>The websocket endpoint is,</p>
 
 <table><thead>
@@ -1950,7 +1973,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
       </div>
       <div class="dark-box">
           <div class="lang-selector">
-                <a href="#" data-language-name="javascript">javascript</a>
+                <a href="#" data-language-name="code">code</a>
           </div>
       </div>
     </div>
