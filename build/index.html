@@ -276,10 +276,13 @@
                     <a href="#heartbeat" class="toc-h2 toc-link" data-title="Heartbeat">Heartbeat</a>
                   </li>
                   <li>
-                    <a href="#prices" class="toc-h2 toc-link" data-title="Prices">Prices</a>
+                    <a href="#l2-order-book" class="toc-h2 toc-link" data-title="L2 Order Book">L2 Order Book</a>
                   </li>
                   <li>
-                    <a href="#ticker" class="toc-h2 toc-link" data-title="Ticker">Ticker</a>
+                    <a href="#l3-order-book" class="toc-h2 toc-link" data-title="L3 Order Book">L3 Order Book</a>
+                  </li>
+                  <li>
+                    <a href="#prices" class="toc-h2 toc-link" data-title="Prices">Prices</a>
                   </li>
                   <li>
                     <a href="#symbols" class="toc-h2 toc-link" data-title="Symbols">Symbols</a>
@@ -290,10 +293,10 @@
                       </ul>
                   </li>
                   <li>
-                    <a href="#l2-order-book" class="toc-h2 toc-link" data-title="L2 Order Book">L2 Order Book</a>
+                    <a href="#ticker" class="toc-h2 toc-link" data-title="Ticker">Ticker</a>
                   </li>
                   <li>
-                    <a href="#l3-order-book" class="toc-h2 toc-link" data-title="L3 Order Book">L3 Order Book</a>
+                    <a href="#trades" class="toc-h2 toc-link" data-title="Trades">Trades</a>
                   </li>
               </ul>
           </li>
@@ -335,7 +338,7 @@
           </li>
       </ul>
         <ul class="toc-footer">
-            <li><a href='https://login.blockchain.com/#/signup'>Get a free wallet</a></li>
+            <li><a href='https://exchange.blockchain.com/trade/login'>Login to the Blockchain.com Exchange</a></li>
         </ul>
     </div>
     <div class="page-wrapper">
@@ -415,29 +418,9 @@
 </tr>
 </thead><tbody>
 <tr>
-<td>trading</td>
-<td>authenticated</td>
-<td>Submit &amp; cancel orders, receive order snapshots and updates</td>
-</tr>
-<tr>
 <td>heartbeat</td>
 <td>anonymous</td>
 <td>Receive heartbeat messages</td>
-</tr>
-<tr>
-<td>prices</td>
-<td>anonymous</td>
-<td>Receive candlestick market data</td>
-</tr>
-<tr>
-<td>ticker</td>
-<td>anonymous</td>
-<td>Receive ticker messages</td>
-</tr>
-<tr>
-<td>symbols</td>
-<td>anonymous</td>
-<td>Receive symbol messages</td>
 </tr>
 <tr>
 <td>l2</td>
@@ -450,6 +433,26 @@
 <td>Receive level 3 order book data (aggregated)</td>
 </tr>
 <tr>
+<td>prices</td>
+<td>anonymous</td>
+<td>Receive candlestick market data</td>
+</tr>
+<tr>
+<td>symbols</td>
+<td>anonymous</td>
+<td>Receive symbol messages</td>
+</tr>
+<tr>
+<td>ticker</td>
+<td>anonymous</td>
+<td>Receive ticker messages</td>
+</tr>
+<tr>
+<td>trades</td>
+<td>anonymous</td>
+<td>Receive trade execution messages</td>
+</tr>
+<tr>
 <td>auth</td>
 <td>authenticated</td>
 <td>To authenticate a web socket connection</td>
@@ -459,9 +462,14 @@
 <td>authenticated</td>
 <td>To receive balance updates</td>
 </tr>
+<tr>
+<td>trading</td>
+<td>authenticated</td>
+<td>Submit &amp; cancel orders, receive order snapshots and updates</td>
+</tr>
 </tbody></table>
 <h3 id='action'>Action</h3>
-<p><code>action</code> describes what action to take for the provided channel. The follow standard action&#39;s are supported by all channels (with the exception of the auth channel):</p>
+<p><code>action</code> describes what action to take for the provided channel. The following standard action&#39;s are supported by all channels (with the exception of the auth channel):</p>
 
 <table><thead>
 <tr>
@@ -587,313 +595,7 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <p>Heartbeat messages are sent every 5 seconds and have the following format:</p>
-<h2 id='prices'>Prices</h2>
-<blockquote>
-<p>Subscribe to channel:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prices"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"granularity"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>To receive candlestick market data you can subscribe to the prices channel.
-Subscriptions are per <code>symbol</code> and <code>granularity</code> (in seconds) has to be specified.
-Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code></p>
-
-<p>You can subscribe for multiple symbols but not for multiple granularities per symbol.</p>
-
-<blockquote>
-<p>Server response:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prices"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>The server will send confirmation of the subscription.</p>
-
-<blockquote>
-<p>Updated event on the prices channel:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prices"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1559039640</span><span class="p">,</span><span class="w"> </span><span class="mf">8697.24</span><span class="p">,</span><span class="w"> </span><span class="mf">8700.98</span><span class="p">,</span><span class="w"> </span><span class="mf">8697.27</span><span class="p">,</span><span class="w"> </span><span class="mf">8700.98</span><span class="p">,</span><span class="w"> </span><span class="mf">0.431</span><span class="p">]</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>The price data is an array consisting of [<code>timestamp</code>, <code>open</code>, <code>high</code>, <code>low</code>, <code>close</code>, <code>volume</code>]</p>
-<h2 id='ticker'>Ticker</h2>
-<blockquote>
-<p>Subscribe to channel:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>In order to receive ticker updates, <code>ticker</code> channel is available. Subscriptions are again per symbol. The server will send confirmation of the subscription.</p>
-
-<blockquote>
-<p>Server response:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<blockquote>
-<p>Example ticker snapshot:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"snapshot"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"price_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">4988.0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"volume_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3015</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"last_trade_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='symbols'>Symbols</h2>
-<blockquote>
-<p>Subscribe to channel:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>To receive symbol updates, subscribe to the <code>symbols</code> channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current <code>symbol</code> status.</p>
-
-<blockquote>
-<p>Server response:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<blockquote>
-<p>Example symbol status:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"snapshot"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbols"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"BTC-USD"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"halt"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"ETH-BTC"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">220001</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"BTC-EUR"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EUR"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"closed"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"ETH-EUR"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EUR"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"ETH-USD"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre><h3 id='field-description'>Field Description</h3>
-<table><thead>
-<tr>
-<th>Field</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>auction-price</td>
-<td>If the symbol is halted and will open on an auction, this will be the opening price.</td>
-</tr>
-<tr>
-<td>auction-size</td>
-<td>Opening size</td>
-</tr>
-<tr>
-<td>auction-time</td>
-<td>Opening time in HHMM format.</td>
-</tr>
-<tr>
-<td>imbalance</td>
-<td>Auction imbalance. If &gt; 0 then there will be buy orders left over at the auction price. If &lt; 0 then there will be sell orders left over at the auction price.</td>
-</tr>
-<tr>
-<td>status</td>
-<td>Symbol status; open, close, suspend, halt, halt-freeze.</td>
-</tr>
-<tr>
-<td>base_currency</td>
-<td>The currency quantities are expressed in</td>
-</tr>
-<tr>
-<td>base_currency_scale</td>
-<td>The number of decimals the currency can be split in</td>
-</tr>
-<tr>
-<td>counter_currency</td>
-<td>The currency prices are expressed in</td>
-</tr>
-<tr>
-<td>counter_currency_scale</td>
-<td>The number of decimals the currency can be split in</td>
-</tr>
-<tr>
-<td>min_price_increment</td>
-<td>The price of the instrument must be a multiple of min_price_increment * (10^-min_price_increment_scale)</td>
-</tr>
-<tr>
-<td>min_price_increment_scale</td>
-<td>The price of the instrument must be a multiple of min_price_increment * (10^-min_price_increment_scale)</td>
-</tr>
-<tr>
-<td>min_order_size</td>
-<td>The minimum quantity for an order for this instrument must be min_order_size*(10^-min_order_size_scale)</td>
-</tr>
-<tr>
-<td>min_order_size_scale</td>
-<td>The minimum quantity for an order for this instrument must be min_order_size*(10^-min_order_size_scale)</td>
-</tr>
-<tr>
-<td>max_order_size</td>
-<td>The maximum quantity for an order for this instrument is max_order_size*(10^-max_order_size_scale). If this equal to zero, there is no limit</td>
-</tr>
-<tr>
-<td>max_order_size_scale</td>
-<td>The maximum quantity for an order for this instrument is max_order_size*(10^-max_order_size_scale). If this equal to zero, there is no limit</td>
-</tr>
-</tbody></table>
-
-<blockquote>
-<p>Example not halted symbol:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"auction-price"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"auction-size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"auction-time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>When the <code>symbol</code> is not halted the auction data in the message may be blank.</p>
-
-<p>When a <code>symbol</code> is in a halt state the auction data will populate as the book builds. When an opening time has been chosen, the <code>auction-time</code> field will show the opening time. Subsequent updates will be sent only if the <code>symbol</code> status changes in any way.</p>
-
-<blockquote>
-<p>Example halted symbol:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"auction-price"</span><span class="p">:</span><span class="w"> </span><span class="mf">4500.5</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"auction-size"</span><span class="p">:</span><span class="w"> </span><span class="mf">220.125</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"auction-time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2230"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">-0.5</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"halt"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='l2-order-book'>L2 Order Book</h2>
+<h2 id='l2-order-book'>L2 Order Book</h2>
 <blockquote>
 <p>Subscribe to channel:</p>
 </blockquote>
@@ -1072,6 +774,348 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="p">],</span><span class="w">
   </span><span class="s2">"asks"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w">
 </span><span class="p">}</span><span class="w">
+</span></code></pre><h2 id='prices'>Prices</h2>
+<blockquote>
+<p>Subscribe to channel:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prices"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"granularity"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>To receive candlestick market data you can subscribe to the prices channel.
+Subscriptions are per <code>symbol</code> and <code>granularity</code> (in seconds) has to be specified.
+Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code></p>
+
+<p>You can subscribe for multiple symbols but not for multiple granularities per symbol.</p>
+
+<blockquote>
+<p>Server response:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prices"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The server will send confirmation of the subscription.</p>
+
+<blockquote>
+<p>Updated event on the prices channel:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prices"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1559039640</span><span class="p">,</span><span class="w"> </span><span class="mf">8697.24</span><span class="p">,</span><span class="w"> </span><span class="mf">8700.98</span><span class="p">,</span><span class="w"> </span><span class="mf">8697.27</span><span class="p">,</span><span class="w"> </span><span class="mf">8700.98</span><span class="p">,</span><span class="w"> </span><span class="mf">0.431</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>The price data is an array consisting of [<code>timestamp</code>, <code>open</code>, <code>high</code>, <code>low</code>, <code>close</code>, <code>volume</code>]</p>
+<h2 id='symbols'>Symbols</h2>
+<p>To receive symbol updates, subscribe to the <code>symbols</code> channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current <code>symbol</code> status. </p>
+
+<p>When the <code>symbol</code> is not halted the auction data in the message may be blank. </p>
+
+<p>When a <code>symbol</code> is in a halt state the auction data will populate as the book builds. When an opening time has been chosen, the <code>auction-time</code> field will show the opening time. Subsequent updates will be sent only if the <code>symbol</code> status changes in any way.</p>
+<h3 id='field-description'>Field Description</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>auction-price</td>
+<td>If the symbol is halted and will open on an auction, this will be the opening price.</td>
+</tr>
+<tr>
+<td>auction-size</td>
+<td>Opening size</td>
+</tr>
+<tr>
+<td>auction-time</td>
+<td>Opening time in HHMM format.</td>
+</tr>
+<tr>
+<td>imbalance</td>
+<td>Auction imbalance. If &gt; 0 then there will be buy orders left over at the auction price. If &lt; 0 then there will be sell orders left over at the auction price.</td>
+</tr>
+<tr>
+<td>status</td>
+<td>Symbol status; open, close, suspend, halt, halt-freeze.</td>
+</tr>
+<tr>
+<td>base_currency</td>
+<td>The currency quantities are expressed in</td>
+</tr>
+<tr>
+<td>base_currency_scale</td>
+<td>The number of decimals the currency can be split in</td>
+</tr>
+<tr>
+<td>counter_currency</td>
+<td>The currency prices are expressed in</td>
+</tr>
+<tr>
+<td>counter_currency_scale</td>
+<td>The number of decimals the currency can be split in</td>
+</tr>
+<tr>
+<td>min_price_increment</td>
+<td>The price of the instrument must be a multiple of min_price_increment * (10^-min_price_increment_scale)</td>
+</tr>
+<tr>
+<td>min_price_increment_scale</td>
+<td>The price of the instrument must be a multiple of min_price_increment * (10^-min_price_increment_scale)</td>
+</tr>
+<tr>
+<td>min_order_size</td>
+<td>The minimum quantity for an order for this instrument must be min_order_size*(10^-min_order_size_scale)</td>
+</tr>
+<tr>
+<td>min_order_size_scale</td>
+<td>The minimum quantity for an order for this instrument must be min_order_size*(10^-min_order_size_scale)</td>
+</tr>
+<tr>
+<td>max_order_size</td>
+<td>The maximum quantity for an order for this instrument is max_order_size*(10^-max_order_size_scale). If this equal to zero, there is no limit</td>
+</tr>
+<tr>
+<td>max_order_size_scale</td>
+<td>The maximum quantity for an order for this instrument is max_order_size*(10^-max_order_size_scale). If this equal to zero, there is no limit</td>
+</tr>
+</tbody></table>
+
+<blockquote>
+<p>Subscribe to channel:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Server response:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Example symbol status:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"snapshot"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbols"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"BTC-USD"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"halt"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"ETH-BTC"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">220001</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"BTC-EUR"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EUR"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"closed"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"ETH-EUR"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EUR"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"ETH-USD"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"base_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"base_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"counter_currency_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_price_increment_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"min_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"max_order_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"lot_size_scale"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"auction_time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Example not halted symbol:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"auction-price"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"auction-size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"auction-time"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"open"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Example halted symbol:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"symbols"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"auction-price"</span><span class="p">:</span><span class="w"> </span><span class="mf">4500.5</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"auction-size"</span><span class="p">:</span><span class="w"> </span><span class="mf">220.125</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"auction-time"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2230"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"imbalance"</span><span class="p">:</span><span class="w"> </span><span class="mf">-0.5</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"halt"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h2 id='ticker'>Ticker</h2>
+<blockquote>
+<p>Subscribe to channel:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>In order to receive ticker updates, <code>ticker</code> channel is available. Subscriptions are again per symbol. The server will send confirmation of the subscription.</p>
+
+<blockquote>
+<p>Server response:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Example ticker snapshot:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"snapshot"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ticker"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">4988.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"volume_24h"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3015</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"last_trade_price"</span><span class="p">:</span><span class="w"> </span><span class="mf">5000.0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre><h2 id='trades'>Trades</h2>
+<p>In order to receive trade updates on executions within each market across the Exchange, you can subscribe to the <code>trades</code> channel.</p>
+
+<blockquote>
+<p>Subscriptions are again per symbol.</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+   </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH-USD"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>The server will send confirmation of the subscription.</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH-USD"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Example of a trade update: </p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"updated"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-08-13T11:30:06.100140Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"qty"</span><span class="p">:</span><span class="w"> </span><span class="mf">8.5E-5</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">11252.4</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"trade_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12884909920"</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre><h1 id='authenticated-channels'>Authenticated Channels</h1><h2 id='authenticated'>Authenticated</h2>
 <p>To authenticate a web socket connection, the client must subscribe to the <code>auth</code> channel passing a token field. Alternatively a client can provide the header cookie <code>auth_token</code> on a new connection and then authentication will take place immediately without the need to subscribing to <code>auth</code> channel.</p>
 
@@ -1134,7 +1178,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </tr>
 <tr>
 <td>59</td>
-<td>timeInforce</td>
+<td>timeInForce</td>
 <td>string</td>
 <td>YES</td>
 <td>&quot;GTC&quot; for Good Till Cancel, &quot;IOC&quot; for Immediate or Cancel, &quot;FOK&quot; for Fill or Kill, “GTC” Good Till Date</td>
@@ -1176,7 +1220,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <td>99</td>
 <td>stopPx</td>
 <td>number</td>
-<td>required for stop and stopLimit order types</td>
+<td>required for limit and stopLimit order types</td>
 <td>Price to trigger the stop order</td>
 <td>3500.12</td>
 </tr>
@@ -1194,7 +1238,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <td>string</td>
 <td>Optional for Limit Orders</td>
 <td>The order is placed with Add Liquidity Only (aka Post Only): it will not match liquidity immediately. It will be rejected instead of matching liquidity in the market.</td>
-<td>ALO</td>
+<td>&quot;ALO&quot;</td>
 </tr>
 </tbody></table>
 
@@ -1255,8 +1299,8 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <td>price</td>
 <td></td>
 <td>X</td>
-<td>O</td>
-<td>O</td>
+<td></td>
+<td>X</td>
 </tr>
 <tr>
 <td>expireDate</td>
