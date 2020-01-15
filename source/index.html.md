@@ -5,7 +5,7 @@ language_tabs: # must be one of https://git.io/vQNgJ
   - code
 
 toc_footers:
-  - <a href='https://login.blockchain.com/#/signup'>Get a free wallet</a>
+  - <a href='https://exchange.blockchain.com/trade/login'>Login to the Blockchain.com Exchange</a>
 
 includes:
   - retail_gateway

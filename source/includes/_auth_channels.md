@@ -36,14 +36,14 @@ Below is a table showing the permitted FIX fields used as a JSON key for cancell
 | 11  | clOrdID     | string | YES                                                                      | Reference field provided by client and cannot exceed 20 characters                                                                                                     | "ABC"     |
 | 55  | symbol      | string | YES                                                                      | Blockchain symbol identifier                                                                                                                                           | "BTC-USD" |
 | 40  | ordType     | string | YES                                                                      | "market" for market "limit" for limit, "stop" for stop, "stopLimit" for stopLimit                                                                                      | "limit"   |
-| 59  | timeInforce | string | YES                                                                      | "GTC" for Good Till Cancel, "IOC" for Immediate or Cancel, "FOK" for Fill or Kill, “GTC” Good Till Date                                                                | "GTC"     |
+| 59  | timeInForce | string | YES                                                                      | "GTC" for Good Till Cancel, "IOC" for Immediate or Cancel, "FOK" for Fill or Kill, “GTC” Good Till Date                                                                | "GTC"     |
 | 54  | side        | string | YES                                                                      | "buy" for Buy, "sell" for Sell                                                                                                                                         | "buy"     |
 | 38  | orderQty    | number | YES                                                                      | The order size in the terms of the base currency                                                                                                                       | 10.23     |
 | 44  | price       | number | required for limit and stopLimit order types                             | The limit price for the order                                                                                                                                          | 0.12345   |
 | 432 | expireDate  | number | required for GTD orders                                                  | expiry date in the format YYYYMMDD                                                                                                                                     | 20190318  |
 | 99  | stopPx      | number | required for limit and stopLimit order types                             | Price to trigger the stop order                                                                                                                                        | 3500.12   |
 | 110 | minQty      | number | Optional for all market orders and for limit orders with IOC timeInForce | The minimum quantity required for an IOC fill                                                                                                                          | 10.0      |
-| 18  | execInst    | string | Optional for Limit Orders                                                | The order is placed with Add Liquidity Only (aka Post Only): it will not match liquidity immediately. It will be rejected instead of matching liquidity in the market. | ALO       |
+| 18  | execInst    | string | Optional for Limit Orders                                                | The order is placed with Add Liquidity Only (aka Post Only): it will not match liquidity immediately. It will be rejected instead of matching liquidity in the market. | "ALO"     |
 
 Below is a table representing the different permutations permitted for the FIX fields, with X indicating what can be added and where O is not required:
 
@@ -55,7 +55,7 @@ Below is a table representing the different permutations permitted for the FIX f
 | timeInForce | O      | X     | X    | X          |
 | side        | X      | X     | X    | X          |
 | orderQty    | X      | X     | X    | X          |
-| price       |        | X     | O    | O          |
+| price       |        | X     |      | X          |
 | expireDate  |        | O     |      |            |
 | stopPx      |        |       | X    | X          |
 | minQty      | O      | O     |      |            |
