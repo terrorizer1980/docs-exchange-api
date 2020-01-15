@@ -2,6 +2,12 @@
 
 Welcome to Blockchain.com's Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades.
 
+## To Get Started
+- Create or log into your existing Blockchain.com Exchange account
+- Select API from the drop down menu
+- Fill out form and click “Create New API Key Now”
+- Once generated you can view your keys under API Settings
+
 # Websocket API
 
 The Websocket API can be used to receive market data and to interact with the trading system in real time. Every message is in a JSON format and trading messages use the FIX standard for naming of fields, and message types.
