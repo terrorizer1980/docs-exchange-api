@@ -64,15 +64,16 @@ A channel provides context about the type of data being communicated between the
 
 | Channel   | Visibility    | Description                                                 |
 | --------- | ------------- | ----------------------------------------------------------- |
-| trading   | authenticated | Submit & cancel orders, receive order snapshots and updates |
 | heartbeat | anonymous     | Receive heartbeat messages                                  |
-| prices    | anonymous     | Receive candlestick market data                             |
-| ticker    | anonymous     | Receive ticker messages                                     |
-| symbols   | anonymous     | Receive symbol messages                                     |
 | l2        | anonymous     | Receive level 2 order book data (aggregated)                |
 | l3        | anonymous     | Receive level 3 order book data (aggregated)                |
+| prices    | anonymous     | Receive candlestick market data                             |
+| symbols   | anonymous     | Receive symbol messages                                     |
+| ticker    | anonymous     | Receive ticker messages                                     |
+| trades    | anonymous     | Receive trade execution messages                            |
 | auth      | authenticated | To authenticate a web socket connection                     |
 | balances  | authenticated | To receive balance updates                                  |
+| trading   | authenticated | Submit & cancel orders, receive order snapshots and updates |
 
 ### Action
 
