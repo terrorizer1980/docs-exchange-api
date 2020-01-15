@@ -76,7 +76,7 @@ A channel provides context about the type of data being communicated between the
 
 ### Action
 
-`action` describes what action to take for the provided channel. The follow standard action's are supported by all channels (with the exception of the auth channel):
+`action` describes what action to take for the provided channel. The following standard action's are supported by all channels (with the exception of the auth channel):
 
 | Action      | Description                                          |
 | ----------- | ---------------------------------------------------- |
