@@ -25,7 +25,7 @@ A heartbeat can be sent by the server by subscribing to the `heartbeat` channel.
 
 The server will send confirmation of the subscription.
 
-> Heartbeat messages:
+> Snapshot Example:
 
 ```json
 {
@@ -36,7 +36,7 @@ The server will send confirmation of the subscription.
 }
 ```
 
-Heartbeat messages are sent every 5 seconds and have the following format:
+Snapshot messages are sent every 5 seconds and have the following format:
 
 ## L2 Order Book
 
@@ -63,7 +63,7 @@ Level 2 Order Book data is available through the `l2` channel. This channel retu
 }
 ```
 
-> Heartbeat messages:
+> Snapshots:
 
 ```json
 {
@@ -278,9 +278,9 @@ The price data is an array consisting of [`timestamp`, `open`, `high`, `low`, `c
 
 ## Symbols
 
-To receive symbol updates, subscribe to the `symbols` channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current `symbol` status. 
+To receive symbol updates, subscribe to the `symbols` channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current `symbol` status.
 
-When the `symbol` is not halted the auction data in the message may be blank. 
+When the `symbol` is not halted the auction data in the message may be blank.
 
 When a `symbol` is in a halt state the auction data will populate as the book builds. When an opening time has been chosen, the `auction-time` field will show the opening time. Subsequent updates will be sent only if the `symbol` status changes in any way.
 
@@ -303,7 +303,6 @@ When a `symbol` is in a halt state the auction data will populate as the book bu
 | min_order_size_scale      | The minimum quantity for an order for this instrument must be min_order_size\*(10^-min_order_size_scale)                                                      |
 | max_order_size            | The maximum quantity for an order for this instrument is max_order_size\*(10^-max_order_size_scale). If this equal to zero, there is no limit                 |
 | max_order_size_scale      | The maximum quantity for an order for this instrument is max_order_size\*(10^-max_order_size_scale). If this equal to zero, there is no limit                 |
-
 
 > Subscribe to channel:
 
@@ -514,9 +513,9 @@ In order to receive trade updates on executions within each market across the Ex
 
 ```json
 {
-   "action": "subscribe",
-   "channel": "trades",
-   "symbol": "ETH-USD"
+  "action": "subscribe",
+  "channel": "trades",
+  "symbol": "ETH-USD"
 }
 ```
 
@@ -531,7 +530,7 @@ In order to receive trade updates on executions within each market across the Ex
 }
 ```
 
-> Example of a trade update: 
+> Example of a trade update:
 
 ```json
 {
@@ -541,7 +540,7 @@ In order to receive trade updates on executions within each market across the Ex
   "symbol": "BTC-USD",
   "timestamp": "2019-08-13T11:30:06.100140Z",
   "side": "sell",
-  "qty": 8.5E-5,
+  "qty": 8.5e-5,
   "price": 11252.4,
   "trade_id": "12884909920"
 }

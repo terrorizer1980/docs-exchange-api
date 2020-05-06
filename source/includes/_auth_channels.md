@@ -175,10 +175,73 @@ Which TIF are supported. X for supported
 
 The `trading` channel supports the following additional actions:
 
-| Action             | Description      |
-| ------------------ | ---------------- |
-| NewOrderSingle     | Creates an order |
-| CancelOrderRequest | Cancels an order |
+| Action                 | Description             |
+| ---------------------- | ----------------------- |
+| NewOrderSingle         | Creates an order        |
+| CancelOrderRequest     | Cancels an order        |
+| OrderMassCancelRequest | Cancel multiple orders  |
+| OrderMassStatusRequest | Snapshot of live orders |
+
+### Cancel on disconnect
+
+When subscribing to this channel, users can enable cancel on disconnect. This ensures that when the connection is disconnected, all live orders of the user will be cancelled.
+
+> To subscribe:
+
+```json
+{
+  "action": "subscribe",
+  "channel": "trading",
+  "cancelOnDisconnect": true
+}
+```
+
+> Server response:
+
+```json
+{
+  "seqnum": 1,
+  "event": "subscribed",
+  "channel": "trading",
+  "cancelOnDisconnect": true
+}
+```
+
+Once enabled, cancel on disconnect cannot be turned off for this connection. Even unsubscribing from trading channel will trigger a cancellation of all live orders.
+
+> The next message will be a snapshot of live orders for the logged on user"
+
+```json
+{
+  "seqnum": 3,
+  "event": "snapshot",
+  "channel": "trading",
+  "orders": [
+    {
+      "orderID": "12891851020",
+      "clOrdID": "78502a08-c8f1-4eff-b",
+      "symbol": "BTC-USD",
+      "side": "sell",
+      "ordType": "limit",
+      "orderQty": 5.0e-4,
+      "leavesQty": 5.0e-4,
+      "cumQty": 0.0,
+      "avgPx": 0.0,
+      "ordStatus": "open",
+      "timeInForce": "GTC",
+      "text": "New order",
+      "execType": "0",
+      "execID": "11321871",
+      "transactTime": "2019-08-13T11:30:03.000593290Z",
+      "msgType": 8,
+      "lastPx": 0.0,
+      "lastShares": 0.0,
+      "tradeId": "0",
+      "price": 15000.0
+    }
+  ]
+}
+```
 
 ## Create a new order (NewOrderSingle)
 
@@ -504,6 +567,42 @@ This action creates an order using the provided fields as described above.
   "event": "rejected",
   "channel": "trading",
   "text": "Internal server error"
+}
+```
+
+## Cancel multiple orders (OrderMassCancelRequest)
+
+Users have the ability to cancel all of their live orders at once by using this action. A symbol can be optionally specified to reduce the scope of this action. After requesting a mass cancel, execution reports for the affected orders will follow.
+
+> To cancel order:
+
+```json
+{
+  "action": "OrderMassCancelRequest",
+  "channel": "trading"
+}
+```
+
+> Server response:
+
+```json
+{
+  "action": "OrderMassCancelRequest",
+  "channel": "trading",
+  "symbol": "BTC-USD"
+}
+```
+
+## Cancel multiple orders (OrderMassStatusRequest)
+
+Live orders can be listed at any point in time with this request. The subsequent response will contain a snapshot similar to the one received when subscribing to this channel.
+
+> To cancel order:
+
+```json
+{
+  "action": "OrderMassStatusRequest",
+  "channel": "trading"
 }
 ```
 
