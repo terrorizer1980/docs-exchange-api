@@ -11,6 +11,7 @@ includes:
   - retail_gateway
   - anonymous_channels
   - auth_channels
+  - rest_endpoints
 
 search: true
 ---
