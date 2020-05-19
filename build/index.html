@@ -605,7 +605,7 @@
 <p>The server will send confirmation of the subscription.</p>
 
 <blockquote>
-<p>Heartbeat messages:</p>
+<p>Snapshot Example:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
@@ -614,7 +614,7 @@
   </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-05-31T08:36:45.666753Z"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p>Heartbeat messages are sent every 5 seconds and have the following format:</p>
+<p>Snapshot messages are sent every 5 seconds and have the following format:</p>
 <h2 id='l2-order-book'>L2 Order Book</h2>
 <blockquote>
 <p>Subscribe to channel:</p>
@@ -638,7 +638,7 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <blockquote>
-<p>Heartbeat messages:</p>
+<p>Snapshots:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
@@ -836,9 +836,9 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </span></code></pre>
 <p>The price data is an array consisting of [<code>timestamp</code>, <code>open</code>, <code>high</code>, <code>low</code>, <code>close</code>, <code>volume</code>]</p>
 <h2 id='symbols'>Symbols</h2>
-<p>To receive symbol updates, subscribe to the <code>symbols</code> channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current <code>symbol</code> status. </p>
+<p>To receive symbol updates, subscribe to the <code>symbols</code> channel. The server will send confirmation of the subscription. The next message on this channel will be a snapshot of the current <code>symbol</code> status.</p>
 
-<p>When the <code>symbol</code> is not halted the auction data in the message may be blank. </p>
+<p>When the <code>symbol</code> is not halted the auction data in the message may be blank.</p>
 
 <p>When a <code>symbol</code> is in a halt state the auction data will populate as the book builds. When an opening time has been chosen, the <code>auction-time</code> field will show the opening time. Subsequent updates will be sent only if the <code>symbol</code> status changes in any way.</p>
 <h3 id='field-description'>Field Description</h3>
@@ -1107,9 +1107,9 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <p>Subscriptions are again per symbol.</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-   </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
-   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH-USD"</span><span class="w">
+  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trades"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH-USD"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <blockquote>
@@ -1123,7 +1123,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <blockquote>
-<p>Example of a trade update: </p>
+<p>Example of a trade update:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w">
@@ -1132,7 +1132,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2019-08-13T11:30:06.100140Z"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"qty"</span><span class="p">:</span><span class="w"> </span><span class="mf">8.5E-5</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"qty"</span><span class="p">:</span><span class="w"> </span><span class="mf">8.5e-5</span><span class="p">,</span><span class="w">
   </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">11252.4</span><span class="p">,</span><span class="w">
   </span><span class="s2">"trade_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"12884909920"</span><span class="w">
 </span><span class="p">}</span><span class="w">
@@ -2140,109 +2140,56 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </span><span class="p">}</span><span class="w">
 </span></code></pre><h1 id='rest-endpoints'>REST Endpoints</h1><h2 id='query-single-order-status'>Query single order status</h2>
 <blockquote>
+<p>Example request:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>GET https://api.blockchain.com/exchange/order/21745988181
+</code></pre>
+<blockquote>
+<p>Response:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"orderId"</span><span class="p">:</span><span class="w"> </span><span class="mi">21745988181</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"gwOrderId"</span><span class="p">:</span><span class="w"> </span><span class="mi">2789221636</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"clOrdId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"d7402f75314a4cf1webd"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH-BTC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ordType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"limit"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"timeInForce"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GTC"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"side"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"orderQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"minQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"cumQty"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.015797</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"stopPx"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"ordStatus"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cancelled"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"expireDate"</span><span class="p">:</span><span class="w"> </span><span class="mi">20200414</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"execID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"537374697"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"avgPx"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <p>In order to look up the status of a single order, users can utilize the following endpoint.</p>
-</blockquote>
 
-<p>| URL |
-https://api.blockchain.com/exchange/order/{orderId}
-|</p>
+<table><thead>
+<tr>
+<th>Item</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>URL</td>
+<td>https://api.blockchain.com/exchange/order/{orderId}</td>
+</tr>
+<tr>
+<td>HTTP Method</td>
+<td>GET</td>
+</tr>
+<tr>
+<td>Required headers</td>
+<td>Cookie: auth_token={apiKey}</td>
+</tr>
+</tbody></table>
 
-<p>| HTTP Method | GET |
-| Required headers |
-Cookie: auth_token={apiKey}
-|</p>
+<p>Users can authenticate using API keys, by providing a cookie named auth_token with the value set to their API key.</p>
 
-<blockquote>
-<p>To receive balances for a user, subscribe to the authenticated balances channel:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribe"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"balances"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<blockquote>
-<p>Server response:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"subscribed"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"balances"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<blockquote>
-<p>Snapshot of user balances (Zero balances are not sent in the initial snapshot):</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"snapshot"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"balances"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"balances"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00366963</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00266963</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">38.746779155</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">28.188009155</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">10558.77</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">11.66</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">11.66</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.18115942</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.18115942</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">37.289855013</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">37.289855013</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">205.84</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"total_available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">65.477864168</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"total_balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">87.696634168</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<blockquote>
-<p>Each time the balance changes, a new snapshot event will be sent from the server; this channel has only ‘snapshot’ event, not ‘updates’</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"seqnum"</span><span class="p">:</span><span class="w"> </span><span class="mi">19</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"event"</span><span class="p">:</span><span class="w"> </span><span class="s2">"snapshot"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"balances"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"balances"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00266963</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00166963</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">28.188009155</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">17.629239155</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">10558.77</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">22.18</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.52</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">22.18</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.52</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.18115942</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.18115942</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">37.289855013</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">37.289855013</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">205.84</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="s2">"total_available_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">65.439094168</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"total_balance_local"</span><span class="p">:</span><span class="w"> </span><span class="mf">87.657864168</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
       </div>
       <div class="dark-box">
           <div class="lang-selector">
