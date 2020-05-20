@@ -338,10 +338,10 @@
                     <a href="#cancel-an-order-cancelorderrequest" class="toc-h2 toc-link" data-title="Cancel an order (CancelOrderRequest)">Cancel an order (CancelOrderRequest)</a>
                   </li>
                   <li>
-                    <a href="#cancel-multiple-orders-ordermasscancelrequest" class="toc-h2 toc-link" data-title="Cancel multiple orders (OrderMassCancelRequest)">Cancel multiple orders (OrderMassCancelRequest)</a>
+                    <a href="#mass-order-cancel-request-ordermasscancelrequest" class="toc-h2 toc-link" data-title="Mass order cancel request (OrderMassCancelRequest)">Mass order cancel request (OrderMassCancelRequest)</a>
                   </li>
                   <li>
-                    <a href="#cancel-multiple-orders-ordermassstatusrequest" class="toc-h2 toc-link" data-title="Cancel multiple orders (OrderMassStatusRequest)">Cancel multiple orders (OrderMassStatusRequest)</a>
+                    <a href="#mass-order-status-request-ordermassstatusrequest" class="toc-h2 toc-link" data-title="Mass order status request (OrderMassStatusRequest)">Mass order status request (OrderMassStatusRequest)</a>
                   </li>
                   <li>
                     <a href="#balances" class="toc-h2 toc-link" data-title="Balances">Balances</a>
@@ -2018,9 +2018,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Internal server error"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='cancel-multiple-orders-ordermasscancelrequest'>Cancel multiple orders (OrderMassCancelRequest)</h2>
-<p>Users have the ability to cancel all of their live orders at once by using this action. A symbol can be optionally specified to reduce the scope of this action. After requesting a mass cancel, execution reports for the affected orders will follow.</p>
-
+</span></code></pre><h2 id='mass-order-cancel-request-ordermasscancelrequest'>Mass order cancel request (OrderMassCancelRequest)</h2>
 <blockquote>
 <p>To cancel order:</p>
 </blockquote>
@@ -2037,9 +2035,9 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC-USD"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='cancel-multiple-orders-ordermassstatusrequest'>Cancel multiple orders (OrderMassStatusRequest)</h2>
-<p>Live orders can be listed at any point in time with this request. The subsequent response will contain a snapshot similar to the one received when subscribing to this channel.</p>
-
+</span></code></pre>
+<p>Users have the ability to cancel all of their live orders at once by using this action. A symbol can be optionally specified to reduce the scope of this action. After requesting a mass cancel, execution reports for the affected orders will follow.</p>
+<h2 id='mass-order-status-request-ordermassstatusrequest'>Mass order status request (OrderMassStatusRequest)</h2>
 <blockquote>
 <p>To cancel order:</p>
 </blockquote>
@@ -2047,7 +2045,9 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="s2">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"OrderMassStatusRequest"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trading"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre><h2 id='balances'>Balances</h2>
+</span></code></pre>
+<p>Live orders can be listed at any point in time with this request. The subsequent response will contain a snapshot similar to the one received when subscribing to this channel.</p>
+<h2 id='balances'>Balances</h2>
 <blockquote>
 <p>To receive balances for a user, subscribe to the authenticated balances channel:</p>
 </blockquote>

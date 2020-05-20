@@ -570,9 +570,7 @@ This action creates an order using the provided fields as described above.
 }
 ```
 
-## Cancel multiple orders (OrderMassCancelRequest)
-
-Users have the ability to cancel all of their live orders at once by using this action. A symbol can be optionally specified to reduce the scope of this action. After requesting a mass cancel, execution reports for the affected orders will follow.
+## Mass order cancel request (OrderMassCancelRequest)
 
 > To cancel order:
 
@@ -593,9 +591,9 @@ Users have the ability to cancel all of their live orders at once by using this 
 }
 ```
 
-## Cancel multiple orders (OrderMassStatusRequest)
+Users have the ability to cancel all of their live orders at once by using this action. A symbol can be optionally specified to reduce the scope of this action. After requesting a mass cancel, execution reports for the affected orders will follow.
 
-Live orders can be listed at any point in time with this request. The subsequent response will contain a snapshot similar to the one received when subscribing to this channel.
+## Mass order status request (OrderMassStatusRequest)
 
 > To cancel order:
 
@@ -605,6 +603,8 @@ Live orders can be listed at any point in time with this request. The subsequent
   "channel": "trading"
 }
 ```
+
+Live orders can be listed at any point in time with this request. The subsequent response will contain a snapshot similar to the one received when subscribing to this channel.
 
 ## Balances
 
