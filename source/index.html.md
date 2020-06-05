@@ -12,7 +12,6 @@ includes:
   - anonymous_channels
   - auth_channels
   - rest_endpoints
-  - whitelist_addresses
 
 search: true
 ---
