@@ -357,9 +357,6 @@
                   <li>
                     <a href="#view-whitelisted-addresses" class="toc-h2 toc-link" data-title="View whitelisted addresses">View whitelisted addresses</a>
                   </li>
-                  <li>
-                    <a href="#initiate-a-withdrawal" class="toc-h2 toc-link" data-title="Initiate a withdrawal">Initiate a withdrawal</a>
-                  </li>
               </ul>
           </li>
       </ul>
@@ -2199,11 +2196,10 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 <blockquote>
 <p>Example request:</p>
 </blockquote>
-<pre class="highlight shell tab-shell"><code>curl --request GET <span class="s1">'https://api.blockchain.info/nabu-gateway/payments/whitelist'</span> <span class="se">\</span>
---header <span class="s1">'Authorization: Bearer $API_KEY_JWT_TOKEN'</span>
+<pre class="highlight plaintext"><code>GET https://api.blockchain.info/exchange/beneficiaries/whitelist
 </code></pre>
 <blockquote>
-<p>Example Response:</p>
+<p>Response:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"capabilities"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
@@ -2246,37 +2242,29 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
   </span><span class="p">]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<p><code>GET /nabu-gateway/payments/whitelist</code></p>
-<h2 id='initiate-a-withdrawal'>Initiate a withdrawal</h2>
-<blockquote>
-<p>Example Request</p>
-</blockquote>
-<pre class="highlight shell tab-shell"><code>curl --request POST <span class="s1">'https://api.blockchain.info/nabu-gateway/payments/withdrawals'</span> <span class="se">\</span>
---header <span class="s1">'blockchain-origin: PIT'</span> <span class="se">\</span>
---header <span class="s1">'Authorization: Bearer $API_KEY_JWT_TOKEN'</span> <span class="se">\</span>
---header <span class="s1">'Content-Type: application/json'</span> <span class="se">\</span>
---data-raw <span class="s1">'{
-    "beneficiary": "96b9b56a-832e-4632-9e1b-b93b525202c3",
-    "currency": "ETH",
-    "amount": "0.025"
-}'</span>
-</code></pre>
-<blockquote>
-<p>Example Response</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"29a0f1bf-4926-4e1e-bb65-84ef7e755538"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"c494c4d7-72bd-4a67-8a54-cb7af88d4329"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"product"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MERCURY"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.025"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="s2">"state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>POST <code>/nabu-gateway/payments/withdrawals</code> <code>beneficiary</code> in the request JSON body
-must match the ID from <code>GET /nabu-gateway/payments/whitelist</code> service.</p>
+<p>In order to see the list of whitelisted beneficiaries, users can utilize the following endpoint.</p>
+
+<table><thead>
+<tr>
+<th>Item</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>URL</td>
+<td>https://api.blockchain.com/exchange/beneficiaries/whitelist</td>
+</tr>
+<tr>
+<td>HTTP Method</td>
+<td>GET</td>
+</tr>
+<tr>
+<td>Required headers</td>
+<td>Cookie: auth_token={apiKey}</td>
+</tr>
+</tbody></table>
+
+<p>Users can authenticate using API keys, by providing a cookie named auth_token with the value set to their API key.</p>
 
       </div>
       <div class="dark-box">
