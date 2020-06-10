@@ -45,12 +45,11 @@ Users can authenticate using API keys, by providing a cookie named auth_token wi
 
 > Example request:
 
-```shell
-curl --request GET 'https://api.blockchain.info/nabu-gateway/payments/whitelist' \
---header 'Authorization: Bearer $API_KEY_JWT_TOKEN'
+```
+GET https://api.blockchain.info/exchange/beneficiaries/whitelist
 ```
 
-> Example Response:
+> Response:
 
 ```json
 {
@@ -95,38 +94,12 @@ curl --request GET 'https://api.blockchain.info/nabu-gateway/payments/whitelist'
 }
 ```
 
-`GET /nabu-gateway/payments/whitelist`
+In order to see the list of whitelisted beneficiaries, users can utilize the following endpoint.
 
-## Initiate a withdrawal
+| Item             | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| URL              | https://api.blockchain.com/exchange/beneficiaries/whitelist |
+| HTTP Method      | GET                                                         |
+| Required headers | Cookie: auth_token={apiKey}                                 |
 
-> Example Request
-
-```shell
-curl --request POST 'https://api.blockchain.info/nabu-gateway/payments/withdrawals' \
---header 'blockchain-origin: PIT' \
---header 'Authorization: Bearer $API_KEY_JWT_TOKEN' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "beneficiary": "96b9b56a-832e-4632-9e1b-b93b525202c3",
-    "currency": "ETH",
-    "amount": "0.025"
-}'
-```
-
-> Example Response
-
-```json
-{
-  "id": "29a0f1bf-4926-4e1e-bb65-84ef7e755538",
-  "user": "c494c4d7-72bd-4a67-8a54-cb7af88d4329",
-  "product": "MERCURY",
-  "amount": {
-    "symbol": "ETH",
-    "value": "0.025"
-  },
-  "state": "NONE"
-}
-```
-
-POST `/nabu-gateway/payments/withdrawals` `beneficiary` in the request JSON body
-must match the ID from `GET /nabu-gateway/payments/whitelist` service.
+Users can authenticate using API keys, by providing a cookie named auth_token with the value set to their API key.
