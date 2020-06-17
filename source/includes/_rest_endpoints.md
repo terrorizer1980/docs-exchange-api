@@ -103,3 +103,56 @@ In order to see the list of whitelisted beneficiaries, users can utilize the fol
 | Required headers | Cookie: auth_token={apiKey}                                 |
 
 Users can authenticate using API keys, by providing a cookie named auth_token with the value set to their API key.
+
+## Create A Withdrawal
+
+> Example request:
+
+```
+POST https://api.blockchain.info/exchange/withdrawals
+```
+```json
+{
+	"currency": "BTC",
+	"amount": "0.0001",
+	"beneficiary": "3ff5bc82-b118-45b3-b468-9697be208bdf"
+}
+```
+
+> Response:
+
+```json
+{
+    "id": "1941fcdd-d16a-4b5a-998e-f58f5862af88",
+    "user": "e9307d88-bd92-4fdf-840c-7e30fbb0bbd7",
+    "product": "MERCURY",
+    "amount": {
+        "symbol": "BTC",
+        "value": "0.0001"
+    },
+    "fee": {
+        "symbol": "BTC",
+        "value": "0.0005"
+    },
+    "state": "NONE"
+}
+```
+
+In order to create a withdrawal via api, users can utilize the following endpoint.
+
+| Item             | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| URL              | https://api.blockchain.com/exchange/withdrawals |
+| HTTP Method      | POST                                                         |
+| Required headers | Cookie: auth_token={apiKey}                                 |
+
+Users can authenticate using API keys, by providing a cookie named auth_token with the value set to their API key.
+
+**Request Parameters**
+
+| Parameter        | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| currency         | The ticker symbol for the withdrawal currency e.g. "BTC |
+| amount           | The amount of the withdrawal as a decimal e.g. 1.231  |
+| beneficiary | The id of your beneficiary for this currency, which can be retrieved by using the /beneficiaries endpoint|
+
