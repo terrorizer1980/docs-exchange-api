@@ -98,7 +98,7 @@ In order to see the list of whitelisted beneficiaries, users can utilize the fol
 
 | Item             | Description                                                 |
 | ---------------- | ----------------------------------------------------------- |
-| URL              | https://api.blockchain.com/exchange/beneficiaries/whitelist |
+| URL              | https://api.blockchain.com/exchange/beneficiaries |
 | HTTP Method      | GET                                                         |
 | Required headers | Cookie: auth_token={apiKey}                                 |
 
@@ -109,7 +109,7 @@ Users can authenticate using API keys, by providing a cookie named auth_token wi
 > Example request:
 
 ```
-POST https://api.blockchain.info/exchange/withdrawals
+POST https://api.blockchain.com/exchange/withdrawals
 ```
 ```json
 {
