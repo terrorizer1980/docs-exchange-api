@@ -357,6 +357,9 @@
                   <li>
                     <a href="#view-whitelisted-addresses" class="toc-h2 toc-link" data-title="View whitelisted addresses">View whitelisted addresses</a>
                   </li>
+                  <li>
+                    <a href="#create-a-withdrawal" class="toc-h2 toc-link" data-title="Create A Withdrawal">Create A Withdrawal</a>
+                  </li>
               </ul>
           </li>
       </ul>
@@ -2252,7 +2255,7 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </thead><tbody>
 <tr>
 <td>URL</td>
-<td>https://api.blockchain.com/exchange/beneficiaries/whitelist</td>
+<td>https://api.blockchain.com/exchange/beneficiaries</td>
 </tr>
 <tr>
 <td>HTTP Method</td>
@@ -2265,6 +2268,80 @@ Supported granularity values are: <code>60, 300, 900, 3600, 21600, 86400</code><
 </tbody></table>
 
 <p>Users can authenticate using API keys, by providing a cookie named auth_token with the value set to their API key.</p>
+<h2 id='create-a-withdrawal'>Create A Withdrawal</h2>
+<blockquote>
+<p>Example request:</p>
+</blockquote>
+<pre class="highlight plaintext"><code>POST https://api.blockchain.com/exchange/withdrawals
+</code></pre><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0001"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"beneficiary"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3ff5bc82-b118-45b3-b468-9697be208bdf"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<blockquote>
+<p>Response:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1941fcdd-d16a-4b5a-998e-f58f5862af88"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e9307d88-bd92-4fdf-840c-7e30fbb0bbd7"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"product"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MERCURY"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0001"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"fee"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"symbol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.0005"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NONE"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>In order to create a withdrawal via api, users can utilize the following endpoint.</p>
+
+<table><thead>
+<tr>
+<th>Item</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>URL</td>
+<td>https://api.blockchain.com/exchange/withdrawals</td>
+</tr>
+<tr>
+<td>HTTP Method</td>
+<td>POST</td>
+</tr>
+<tr>
+<td>Required headers</td>
+<td>Cookie: auth_token={apiKey}</td>
+</tr>
+</tbody></table>
+
+<p>Users can authenticate using API keys, by providing a cookie named auth_token with the value set to their API key.</p>
+
+<p><strong>Request Parameters</strong></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>currency</td>
+<td>The ticker symbol for the withdrawal currency e.g. &quot;BTC</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>The amount of the withdrawal as a decimal e.g. 1.231</td>
+</tr>
+<tr>
+<td>beneficiary</td>
+<td>The id of your beneficiary for this currency, which can be retrieved by using the /beneficiaries endpoint</td>
+</tr>
+</tbody></table>
 
       </div>
       <div class="dark-box">
