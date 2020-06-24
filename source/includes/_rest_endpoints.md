@@ -46,7 +46,7 @@ Users can authenticate using API keys, by providing a cookie named auth_token wi
 > Example request:
 
 ```
-GET https://api.blockchain.info/exchange/beneficiaries/whitelist
+GET https://api.blockchain.com/exchange/beneficiaries
 ```
 
 > Response:
