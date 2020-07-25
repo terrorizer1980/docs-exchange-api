@@ -2,6 +2,8 @@
 
 Welcome to Blockchain.com's Exchange API and developer documentation. These documents detail and give examples of various functionality offered by the API such as receiving real time market data, requesting balance information and performing trades.
 
+View the full REST API documentation <a href='https://api.blockchain.com/v3/' target="_blank">here</a>.
+
 ## To Get Started
 
 - Create or log into your existing Blockchain.com Exchange account
